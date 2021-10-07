@@ -6,7 +6,7 @@ namespace WebShopUser
     {
         static void Main(string[] args)
         {
-            Menu Menu = new Menu();
+            Menu menu = new Menu();
         }
     }
 }

@@ -5,15 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopUser
 {
-    class ShopDataContext : DbContext
+    class ShopDataContext : DbContext // Класс контекста с БД
     {
         public DbSet<Customer> Users { get; set; }
         public DbSet<Product> Warehouse { get; set; }
         public DbSet<Basket> Purchases { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
         public ShopDataContext()
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 

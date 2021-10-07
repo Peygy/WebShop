@@ -4,11 +4,11 @@ using System.Text;
 
 namespace WebShopUser
 {
-    class Product
+    class Product // Продукт
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
-        public string Category { get; set; }
+        public Category ProductCategory { get; set; }
     }
 }
