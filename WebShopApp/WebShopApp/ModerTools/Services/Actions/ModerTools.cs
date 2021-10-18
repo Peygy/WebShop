@@ -15,9 +15,9 @@ namespace WebShopApp
 
             using (AdminDataContext data = new AdminDataContext())
             {
-                foreach (Product product in data.Warehouse)
+                foreach (Category category in data.Categories)
                 {
-                    Console.WriteLine($"{product.Id}. {product.Name} => Категория: {product.ProductCategory.Name}");
+                    Console.WriteLine($"{category.Id}. {category.Name}");
                 }               
             }
         }

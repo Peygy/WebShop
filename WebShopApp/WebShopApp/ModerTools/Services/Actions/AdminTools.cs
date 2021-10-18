@@ -128,7 +128,7 @@ namespace WebShopApp
                 {
                     if (!data.Categories.Any(p => p.Name == categoryName))
                     {
-                        Category category = new Category { Name = categoryName};
+                        Category category = new Category { Name = categoryName };
                         data.Categories.Add(category);
                         data.SaveChanges();
                         exit = true;
