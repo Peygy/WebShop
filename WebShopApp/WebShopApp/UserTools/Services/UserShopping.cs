@@ -30,7 +30,7 @@ namespace WebShopApp
                 Console.WriteLine("Выберите нужную вам категорию");
                 Console.WriteLine();
 
-                using (ShopDataContext data = new ShopDataContext())
+                using (UserDataContext data = new UserDataContext())
                 {
                     var categories = data.Categories.ToList();
 
@@ -77,7 +77,7 @@ namespace WebShopApp
                 Console.WriteLine("Выберите нужный вам товар");
                 Console.WriteLine();
 
-                using (ShopDataContext data = new ShopDataContext())
+                using (UserDataContext data = new UserDataContext())
                 {
                     var products = data.Warehouse.Where(p => p.ProductCategory.Id == categoryId).ToList();
 
@@ -105,6 +105,7 @@ namespace WebShopApp
                         if (Console.ReadLine() == "1")
                         {
                             user.Basket.Add(products[ProductInput - 1]);
+                            data.SaveChanges();
                             Console.Clear();
                             Console.WriteLine("Товар успешно добавлен в корзину! Нажмите Enter");
                             Console.ReadLine();

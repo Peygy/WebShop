@@ -15,7 +15,14 @@ namespace WebShopApp
         public void ProductInfo() // Инфо продукта
         {
             Console.WriteLine($"Название продукта: {Name}");
-            Console.WriteLine($"Категория: {ProductCategory.Name}");
+            if(ProductCategory.Name == null)
+            {
+                Console.WriteLine("Категории нет");
+            }
+            else
+            {
+                Console.WriteLine($"Категория: {ProductCategory.Name}");
+            }            
             Console.WriteLine($"Стоимость: {Price}");
             Console.WriteLine();
         }

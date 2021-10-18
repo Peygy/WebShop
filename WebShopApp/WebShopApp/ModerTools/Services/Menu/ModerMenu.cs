@@ -4,27 +4,68 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class ModerMenu
+    class ModerMenu // Меню Модерации
     {
-        Moderator moder;
+        ModerTools moderAct;
 
-        public ModerMenu(Moderator moderInput)
+        public ModerMenu()
         {
-            moder = moderInput;
-            if(moder.SpecialKey == 01)
-            {
-                ModerShowcase();
-            }
-            else if(moder.SpecialKey == 011)
-            {
-                Admin admin = new Admin { Login = moder.Login, Password = moder.Password, SpecialKey = moder.SpecialKey };
-                AdminMenu AdmMenu = new AdminMenu(admin);
-            }
+            moderAct = new ModerTools();       
         }
 
         public void ModerShowcase()
         {
+            bool exit = false;
 
+            while (!exit)
+            {
+                Console.Clear();
+                Console.WriteLine("Меню модерации магазина:");
+                Console.WriteLine("1. Просмотреть/Редактировать категории");
+                Console.WriteLine("2. Просмотреть продукты");
+                Console.WriteLine("3. Посмотреть заказы");
+                Console.WriteLine("4. Посмотреть пользователей");
+                Console.WriteLine("5. Выход");
+
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        {
+                            Console.Clear();
+                            moderAct.ViewAllCategories();
+                            moderAct.EditCategory();
+                            break;
+                        }
+                    case "2":
+                        {
+                            Console.Clear();
+                            moderAct.ViewAllProducts();
+                            Console.ReadLine();
+                            break;
+                        }
+                    case "3":
+                        {
+                            Console.Clear();
+                            moderAct.ViewAllOrders();
+                            Console.ReadLine();
+                            break;
+                        }
+                    case "4":
+                        {
+                            Console.Clear();
+                            moderAct.ViewAllUsers();
+                            Console.ReadLine();
+                            break;
+                        }
+                    case "5":
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Выход выполнен успешно, До Свидания!");
+                            exit = true;
+                            break;
+                        }
+                }
+            }
         }        
     }
 }

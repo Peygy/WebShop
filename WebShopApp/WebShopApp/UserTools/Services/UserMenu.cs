@@ -8,11 +8,11 @@ namespace WebShopApp
     {
         UserShopping buying;
         Customer user;
-        UserBasketActions basket;
+        UserTools actions;
 
         public UserMenu(Customer UserInput)
         {
-            basket = new UserBasketActions();
+            actions = new UserTools();
             user = UserInput;
         }
 
@@ -27,7 +27,8 @@ namespace WebShopApp
                 Console.WriteLine("1. Начать покупку");
                 Console.WriteLine("2. Посмотреть корзину");
                 Console.WriteLine("3. Посмотреть заказы");
-                Console.WriteLine("4. Выход");
+                Console.WriteLine("4. Удалить аккаунт");
+                Console.WriteLine("5. Выход");
 
                 switch (Console.ReadLine())
                 {
@@ -41,16 +42,25 @@ namespace WebShopApp
                     case "2":
                         {
                             Console.Clear();
-                            basket.OrderRegistr(user);
+                            actions.OrderRegistr(user);
                             break;
                         }
                     case "3":
                         {
                             Console.Clear();
-                            basket.OrdersInfo(user);
+                            actions.OrdersInfo(user);
                             break;
                         }
                     case "4":
+                        {
+                            Console.Clear();
+                            if(actions.AccountRemove(user))
+                            {
+                                exit = true;
+                            }                                                     
+                            break;
+                        }
+                    case "5":
                         {
                             Console.Clear();
                             Console.WriteLine("Спасибо за покупки, приходите ещё!");

@@ -21,17 +21,23 @@ namespace WebShopApp
                 Console.Write("Введите Ваш Пароль: ");
                 string password = Console.ReadLine();
 
-                using (ShopDataContext data = new ShopDataContext())
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    if(data.Users.Any(p => p.Login == login && p.Password == password && p.SpecialKey == 00))
+                    if(data.Users.Any(p => p.Login == login && p.Password == password))
                     {
-                        user = new Customer { Login = login, Password = password };
+                        user = new Customer { Login = login, Password = password, SpecialKey = "00" };
                         EndEntry = true;
                     }
                     else if(data.Moders.Any(p => p.Login == login && p.Password == password))
                     {
-                        user = new Customer { Login = login, Password = password };
-                        EndEntry = true;
+                        Console.Write("Ключ идентификации: ");
+                        string key = Console.ReadLine();
+
+                        if (key == data.Moders.FirstOrDefault(p => p.Login == login && p.Password == password).SpecialKey)
+                        {
+                            user = new Customer { Login = login, Password = password, SpecialKey = key };
+                            EndEntry = true;
+                        }
                     }
                     else
                     {
@@ -54,9 +60,27 @@ namespace WebShopApp
                 string password = null;
                 string login = null;
 
-                Console.Write("Введите Логин: ");
-                login = Console.ReadLine();
-                Console.WriteLine();
+                using (AdminDataContext data = new AdminDataContext())
+                {
+                    bool exit = false;
+                    while (!exit)
+                    {
+                        Console.Write("Введите Логин: ");
+                        login = Console.ReadLine();
+                        Console.WriteLine();
+
+                        if(data.Users.Any(p => p.Login == login))
+                        {
+                            Console.WriteLine("Такой логин занят!");
+                            Console.ReadLine();
+                            Console.Clear();
+                        }
+                        else
+                        {
+                            exit = true;
+                        }
+                    }
+                }
 
                 Console.Write("Введите Пароль (Не менее 8 символов): ");
                 password = Console.ReadLine();
@@ -87,9 +111,9 @@ namespace WebShopApp
                 {
                     case "1":
                         {
-                            using (ShopDataContext data = new ShopDataContext())
+                            using (AdminDataContext data = new AdminDataContext())
                             {
-                                user = new Customer { Login = login, Password = password, SpecialKey = 00 };
+                                user = new Customer { Login = login, Password = password, SpecialKey = "00" };
                                 data.Users.Add(user);
                                 data.SaveChanges();
                             }

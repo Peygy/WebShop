@@ -5,15 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class ShopDataContext : DbContext // Класс контекста с БД
+    class UserDataContext : DbContext
     {
-        public DbSet<Customer> Users { get; set; }
         public DbSet<Product> Warehouse { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Moderator> Moders { get; set; }
 
-        public ShopDataContext()
+        public UserDataContext()
         {
             Database.EnsureCreated();
         }

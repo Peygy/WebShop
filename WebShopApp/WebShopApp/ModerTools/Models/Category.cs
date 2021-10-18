@@ -7,7 +7,7 @@ namespace WebShopApp
     class Category // Класс Категории
     {
         public int Id { get; set; }
-        public int Name { get; set; }
+        public string Name { get; set; }
         public List<Product> Products { get; set; } 
 
         public Category()

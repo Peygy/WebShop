@@ -12,7 +12,7 @@ namespace WebShopApp
         public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public int SpecialKey { get; set; }
+        public string SpecialKey { get; set; }
         //public int Balance { get; set; }
         public List<Order> UserOrder { get; set; }
         [NotMapped]
