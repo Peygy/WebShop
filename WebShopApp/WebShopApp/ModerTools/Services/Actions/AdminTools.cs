@@ -12,7 +12,7 @@ namespace WebShopApp
         Category category;
         Product product;
 
-        public void CategorySetUp()
+        public void CategorySetUp() //Настройка категории
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -43,7 +43,7 @@ namespace WebShopApp
             }
         }
 
-        public void EditCategory()
+        public void EditCategory() //Редактировать категорию
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -111,7 +111,7 @@ namespace WebShopApp
             }
         }
 
-        public void AddCategory()
+        public void AddCategory() //Добавить категорию
         {
             bool exit = false;
 
@@ -147,7 +147,7 @@ namespace WebShopApp
             }
         }      
 
-        public void RenameCategory(Category category)
+        public void RenameCategory(Category category) //Переименновать категорию
         {
             bool exit = false;
             string categoryNameOld = "";
@@ -215,7 +215,7 @@ namespace WebShopApp
         
 
 
-        public void ProductSetUp() // Добавить/Удалить продукты
+        public void ProductSetUp() // Добавить/Удалить/Редактировать продукты
         {
             moderAct.ViewAllProducts();
 
@@ -251,7 +251,7 @@ namespace WebShopApp
             }
         } 
         
-        public void AddProduct()
+        public void AddProduct() //Добавить продукт
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -312,7 +312,7 @@ namespace WebShopApp
             }
         }
 
-        public void EditProduct()
+        public void EditProduct() //Редактировать продукт
         {
             moderAct.ViewAllProducts();
             Console.WriteLine();
@@ -363,7 +363,7 @@ namespace WebShopApp
             }
         }
 
-        public void RemoveProduct()
+        public void RemoveProduct() //Удалить продукт
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -409,7 +409,7 @@ namespace WebShopApp
             }
         }
 
-        public void EditProductRename(Product product)
+        public void EditProductRename(Product product) //Переименновать продукт
         {
             bool exit = false;
             string productNameOld = "";
@@ -449,7 +449,7 @@ namespace WebShopApp
             }
         }
 
-        public void EditProductCategory(Product product)
+        public void EditProductCategory(Product product) //Поменять категорию продукта
         {
             bool exit = false;
             string productCategOld = "";
@@ -490,7 +490,7 @@ namespace WebShopApp
             }
         }
 
-        public void EditProductPrice(Product product)
+        public void EditProductPrice(Product product) //Поменять стоимость продукта
         {
             bool exit = false;
 
@@ -533,7 +533,7 @@ namespace WebShopApp
 
 
 
-        public void OrdersSetUp()
+        public void OrdersSetUp() //Настройка заказов
         {
             moderAct.ViewAllOrders();
 
@@ -555,7 +555,7 @@ namespace WebShopApp
             }
         }
 
-        public void OrderRemove()
+        public void OrderRemove() //Удалить заказ
         {
             bool exit = false;
 
@@ -595,7 +595,7 @@ namespace WebShopApp
 
 
 
-        public void UsersSetUp()
+        public void UsersSetUp() //Настройка пользователей
         {
             moderAct.ViewAllOrders();
 
@@ -617,7 +617,7 @@ namespace WebShopApp
             }
         }
 
-        public void UserRemove()
+        public void UserRemove() //Удалить пользователя
         {
             bool exit = false;
 
@@ -657,7 +657,7 @@ namespace WebShopApp
 
         
 
-        public void ModersSetUp()
+        public void ModersSetUp() //Настройка модераторов
         {
             ViewAllModers();
 
@@ -686,7 +686,7 @@ namespace WebShopApp
             }
         }
 
-        public void AddModer()
+        public void AddModer() //Добавить модератора
         {
             bool exit = false;
 
@@ -744,7 +744,7 @@ namespace WebShopApp
             }
         }
 
-        public void ModerRemove()
+        public void ModerRemove() //Удалить модератора
         {
             bool exit = false;
 
@@ -784,7 +784,7 @@ namespace WebShopApp
 
 
 
-        public void AddAdmin()
+        public void AddAdmin() //Добавить админа
         {
             bool exit = false;
 

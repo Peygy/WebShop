@@ -13,7 +13,7 @@ namespace WebShopApp
             adminAct = new AdminTools();
         }
 
-        public void AdmShowcase()
+        public void AdmShowcase() //Витрина админа
         {
             bool exit = false;
 
@@ -23,8 +23,8 @@ namespace WebShopApp
                 Console.WriteLine("Добро пожаловать, администратор");
                 Console.WriteLine();
                 Console.WriteLine("Меню админа:");
-                Console.WriteLine("1. Добавить/Удалить/Редактировать категорию"); // +
-                Console.WriteLine("2. Добавить/Удалить/Редактировать продукт"); // +
+                Console.WriteLine("1. Добавить/Удалить/Редактировать категорию"); 
+                Console.WriteLine("2. Добавить/Удалить/Редактировать продукт"); 
                 Console.WriteLine("3. Посмотреть/Удалить заказы");
                 Console.WriteLine("4. Посмотреть/Удалить пользователей");
                 Console.WriteLine("5. Добавить/Удалить модератора");

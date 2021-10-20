@@ -16,7 +16,7 @@ namespace WebShopApp
             user = UserInput;
         }
 
-        public void Showcase()
+        public void Showcase() // Витрина пользователя
         {
             bool exit = false;
 
@@ -42,7 +42,7 @@ namespace WebShopApp
                     case "2":
                         {
                             Console.Clear();
-                            actions.OrderRegistr(user);
+                            actions.UserBasket(user);
                             break;
                         }
                     case "3":

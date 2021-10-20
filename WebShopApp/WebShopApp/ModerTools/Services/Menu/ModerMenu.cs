@@ -13,7 +13,7 @@ namespace WebShopApp
             moderAct = new ModerTools();       
         }
 
-        public void ModerShowcase()
+        public void ModerShowcase() //Витрина модератора
         {
             bool exit = false;
 

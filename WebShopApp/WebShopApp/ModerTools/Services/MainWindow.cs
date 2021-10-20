@@ -15,7 +15,7 @@ namespace WebShopApp
             AppStart();
         }
 
-        public void AppStart()
+        public void AppStart() // Старт приложения
         {
             bool exit = false;
 
@@ -64,8 +64,7 @@ namespace WebShopApp
                             exit = true;
                             break;
                         }
-                    //case "whitefountain":
-                    case "w":
+                    case "whitefountain":
                         {
                             Console.Clear();
                             user = entry.SingIn();

@@ -6,11 +6,11 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class UserTools // Класс взаимодействий с корзиной
+    class UserTools // Класс взаимодействий пользователя
     {
         Random gener;
 
-        public void OrderRegistr(Customer user) // Оформление заказа
+        public void UserBasket(Customer user) // Взаимодействие с корзиной
         {
             gener = new Random();
             int orderNumber = 0;
@@ -47,68 +47,12 @@ namespace WebShopApp
             {
                 case "1":
                     {
-                        if (user.Basket.Count == 0)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Ваша корзина пуста!");
-                            Console.ReadLine();
-                            return;
-                        }
-
-                        Console.Clear();
-                        Console.WriteLine();
-                        Console.WriteLine("ВНИМАНИЕ! Оплата онлайн временно не доступна! Автоматически выбрана: Оплата при получении");
-                        Console.ReadLine();
-                        Console.Clear();
-
-                        Console.WriteLine($"Ваш заказ номер: {orderNumber}");
-                        Console.WriteLine();
-                        Console.WriteLine("В вашем заказе:");
-                        user.BasketInfo();
-                        Console.WriteLine("1. Подтвердить заказ");
-                        Console.WriteLine("2. Выйти в меню");
-
-                        if (Console.ReadLine() == "1")
-                        {
-                            using (UserDataContext data = new UserDataContext())
-                            {
-                                Order order = new Order { OrderNum = orderNumber, User = user, Status = "На складе" };
-                                user.UserOrder.Add(order);
-                                data.Orders.Add(order);
-                                data.SaveChanges();
-                            }
-                            Console.WriteLine("Заказ успешно оформлен, следите за его статусом!");
-                            user.Basket.Clear();
-                            Console.ReadLine();
-                        }
+                        RegistrationOrder(user, orderNumber);
                         break;
                     }
                 case "2":
                     {
-                        if (user.Basket.Count == 0)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Ваша корзина пуста!");
-                            Console.ReadLine();
-                            return;
-                        }
-
-                        Console.WriteLine("Корзина:");
-                        Console.WriteLine();
-                        user.BasketInfo();
-                        Console.Write("Какой хотите удалить товар: ");
-                        int.TryParse(Console.ReadLine(), out int prodNum);
-                        user.Basket.RemoveAt(prodNum - 1);
-                        using (UserDataContext data = new UserDataContext())
-                        {
-                            user.Basket.RemoveAt(prodNum - 1);
-                            data.SaveChanges();
-                        }
-
-                        Console.Clear();
-                        Console.WriteLine("Товар удален из корзины!");
-                        Console.ReadLine();
-
+                        ProductRemoveFromBasket(user);
                         break;
                     }
                 case "3":
@@ -119,7 +63,72 @@ namespace WebShopApp
         }
 
 
-        public void OrdersInfo(Customer user) // Вывод заказов
+        public void RegistrationOrder(Customer user, int orderNumber) // Оформление заказа
+        {
+            if (user.Basket.Count == 0)
+            {
+                Console.Clear();
+                Console.WriteLine("Ваша корзина пуста!");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine("ВНИМАНИЕ! Оплата онлайн временно не доступна! Автоматически выбрана: Оплата при получении");
+            Console.ReadLine();
+            Console.Clear();
+
+            Console.WriteLine($"Ваш заказ номер: {orderNumber}");
+            Console.WriteLine();
+            Console.WriteLine("В вашем заказе:");
+            user.BasketInfo();
+            Console.WriteLine("1. Подтвердить заказ");
+            Console.WriteLine("2. Выйти в меню");
+
+            if (Console.ReadLine() == "1")
+            {
+                using (UserDataContext data = new UserDataContext())
+                {
+                    Order order = new Order { OrderNum = orderNumber, User = user, Status = "На складе" };
+                    user.UserOrder.Add(order);
+                    data.Orders.Add(order);
+                    data.SaveChanges();
+                }
+                Console.WriteLine("Заказ успешно оформлен, следите за его статусом!");
+                user.Basket.Clear();
+                Console.ReadLine();
+            }
+        }
+
+        public void ProductRemoveFromBasket(Customer user) // Удалить товар
+        {
+            if (user.Basket.Count == 0)
+            {
+                Console.Clear();
+                Console.WriteLine("Ваша корзина пуста!");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.WriteLine("Корзина:");
+            Console.WriteLine();
+            user.BasketInfo();
+            Console.Write("Какой хотите удалить товар: ");
+            int.TryParse(Console.ReadLine(), out int prodNum);
+            user.Basket.RemoveAt(prodNum - 1);
+            using (UserDataContext data = new UserDataContext())
+            {
+                user.Basket.RemoveAt(prodNum - 1);
+                data.SaveChanges();
+            }
+
+            Console.Clear();
+            Console.WriteLine("Товар удален из корзины!");
+            Console.ReadLine();
+        }
+
+        public void OrdersInfo(Customer user) // Вывод заказов и удаление заказа
         {
             bool accept = false;
 
@@ -192,7 +201,7 @@ namespace WebShopApp
         }
 
 
-        public bool AccountRemove(Customer user)
+        public bool AccountRemove(Customer user) // Удалить аккаунт
         {
             Console.WriteLine("Вы точно хотите удалить Ваш аккаунт?");
             Console.WriteLine("1. Да, точно");
