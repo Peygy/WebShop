@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace WebShopApp
     class AdminTools // Инструменты админа
     {
         ModerTools moderAct = new ModerTools();
-        Category category = new Category();
-        Product product = new Product();
+        Category category;
+        Product product;
 
         public void CategorySetUp()
         {
@@ -46,6 +47,7 @@ namespace WebShopApp
         {
             using (AdminDataContext data = new AdminDataContext())
             {
+
                 moderAct.ViewAllCategories();
                 Console.WriteLine();
                 Console.Write("Категория для редактирования: ");
@@ -264,6 +266,11 @@ namespace WebShopApp
                     Console.Write("Название продукта: ");
                     string productName = Console.ReadLine();
 
+                    if (productName == "menu")
+                    {
+                        return;
+                    }
+
                     while (!categoryCheck)
                     {
                         Console.Clear();
@@ -287,13 +294,14 @@ namespace WebShopApp
                     Console.Clear();
                     Console.WriteLine($"Название продукта: {productName}");
                     Console.WriteLine($"Категория продукта: {productCategoryName}");
-                    Console.WriteLine($"Стоимость продукта: {productPrice}");
+                    Console.WriteLine($"Стоимость продукта: {productPrice} рублей");
                     Console.WriteLine();
                     Console.WriteLine("1. Подтвердить");
                     Console.WriteLine("2. Составить заново");
 
                     if (Console.ReadLine() == "1")
                     {
+                        category = data.Categories.FirstOrDefault(p => p.Name == productCategoryName);
                         Product newProduct = new Product { Name = productName, ProductCategory = category, Price = productPrice };
                         data.Warehouse.Add(newProduct);
                         category.Products.Add(newProduct);
@@ -309,7 +317,13 @@ namespace WebShopApp
             moderAct.ViewAllProducts();
             Console.WriteLine();
             Console.Write("Выберите продукт для редактирования: ");
-            int.TryParse(Console.ReadLine(), out int choice);           
+            string editProduct = Console.ReadLine();
+            int.TryParse(editProduct, out int choice);
+
+            if (editProduct == "menu")
+            {
+                return;
+            }
 
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -361,7 +375,13 @@ namespace WebShopApp
 
                     Console.WriteLine();
                     Console.Write("Продукт для удаления: ");
-                    int.TryParse(Console.ReadLine(), out int productChoice);
+                    string removeProduct = Console.ReadLine();
+                    int.TryParse(removeProduct, out int productChoice);
+
+                    if (removeProduct == "menu")
+                    {
+                        return;
+                    }
 
                     if (data.Warehouse.Any(p => p.Id == productChoice))
                     {

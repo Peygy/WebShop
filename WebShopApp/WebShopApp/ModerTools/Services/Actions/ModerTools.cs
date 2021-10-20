@@ -29,9 +29,18 @@ namespace WebShopApp
                 Console.WriteLine("Все продукты:");
                 Console.WriteLine();
 
-                foreach (Product product in data.Warehouse)
+                foreach (Product product in data.Warehouse.Include(p => p.ProductCategory).ToList())
                 {
-                    Console.WriteLine($"{product.Id}. {product.Name} => Категория: {product.ProductCategory.Name}, Стоимость: {product.Price}");
+                    if (product.ProductCategory.Name == null)
+                    {
+                        Console.WriteLine("Категории нет");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Категория: {product.ProductCategory.Name}");
+                    }
+
+                    Console.WriteLine($"{product.Id}. {product.Name} => Категория: {product.ProductCategory.Name}, Стоимость: {product.Price} рублей");
                 }
             }
         }
@@ -43,7 +52,7 @@ namespace WebShopApp
                 Console.WriteLine("Все заказы:");
                 Console.WriteLine();
 
-                foreach (Order order in data.Orders)
+                foreach (Order order in data.Orders.Include(p => p.User).ToList())
                 {
                     Console.WriteLine($"{order.Id}. {order.OrderNum} => Пользователь: {order.User.Login}, Статус: {order.Status}");
                 }
@@ -88,7 +97,7 @@ namespace WebShopApp
 
                     foreach (Product product in category.Products)
                     {
-                        Console.WriteLine($"{product.Id}. {product.Name} =>  Стоимость: {product.Price}");
+                        Console.WriteLine($"{product.Id}. {product.Name} =>  Стоимость: {product.Price} рублей");
                     }
 
                     Console.WriteLine("1. Добавить товар");
@@ -146,7 +155,7 @@ namespace WebShopApp
 
             foreach (Product product in category.Products)
             {
-                Console.WriteLine($"{product.Id}. {product.Name} =>  Стоимость: {product.Price}");
+                Console.WriteLine($"{product.Id}. {product.Name} =>  Стоимость: {product.Price} рублей");
             }
 
             Console.WriteLine();
