@@ -22,25 +22,19 @@ namespace WebShopApp
             }
         }
 
-        public void ViewAllProducts() // Посмотреть продукты
+        public void ViewAllProducts() // Посмотреть все продукты
         {
             using (AdminDataContext data = new AdminDataContext())
             {
                 Console.WriteLine("Все продукты:");
                 Console.WriteLine();
+                var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
 
-                foreach (Product product in data.Warehouse.Include(p => p.ProductCategory).ToList())
+                for (int i = 0; i < products.Count; i++)
                 {
-                    if (product.ProductCategory.Name == null)
-                    {
-                        Console.WriteLine("Категории нет");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Категория: {product.ProductCategory.Name}");
-                    }
+                    string category = products[i].ProductCategory == null ? "Пусто" : $"{products[i].ProductCategory.Name}";
 
-                    Console.WriteLine($"{product.Id}. {product.Name} => Категория: {product.ProductCategory.Name}, Стоимость: {product.Price} рублей");
+                    Console.WriteLine($"{i + 1}. {products[i].Name} => Категория: {category}, Стоимость: {products[i].Price} рублей");
                 }
             }
         }
@@ -51,10 +45,11 @@ namespace WebShopApp
             {
                 Console.WriteLine("Все заказы:");
                 Console.WriteLine();
+                var orders = data.Orders.Include(p => p.User).ToList();
 
-                foreach (Order order in data.Orders.Include(p => p.User).ToList())
+                for (int i = 0; i < orders.Count; i++)
                 {
-                    Console.WriteLine($"{order.Id}. {order.OrderNum} => Пользователь: {order.User.Login}, Статус: {order.Status}");
+                    Console.WriteLine($"{i + 1}. {orders[i].OrderNum} => Пользователь: {orders[i].User.Login}, Статус: {orders[i].Status}");
                 }
             }
         }
@@ -65,10 +60,13 @@ namespace WebShopApp
             {
                 Console.WriteLine("Все пользователи:");
                 Console.WriteLine();
+                var customers = data.Users.Include(p => p.Basket ).ToList();                
 
-                foreach (Customer customer in data.Users)
+                for (int i = 0; i < customers.Count; i++)
                 {
-                    Console.WriteLine($"{customer.Id}. {customer.Login} => Кол-во заказов: {customer.UserOrder.Count}, Кол-во товаров в корзине: {customer.Basket.Count}");
+                    var orders = data.Orders.Where(p => p.User == customers[i]).ToList();
+
+                    Console.WriteLine($"{i + 1}. {customers[i].Login} => Кол-во заказов: {orders.Count}, Кол-во товаров в корзине: {customers[i].Basket.Count}");
                 }
             }
         }        
@@ -91,13 +89,13 @@ namespace WebShopApp
                 }
                 if (data.Categories.Any(p => p.Id == categoryChoice))
                 {
-                    Category category = data.Categories.FirstOrDefault(p => p.Id == categoryChoice);
+                    Category category = data.Categories.Include(p => p.Products).FirstOrDefault(c => c.Id == categoryChoice);
                     Console.WriteLine($"Категория '{category.Name}':");
                     Console.WriteLine();
 
-                    foreach (Product product in category.Products)
+                    for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{product.Id}. {product.Name} =>  Стоимость: {product.Price} рублей");
+                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Стоимость: {category.Products[i].Price} рублей");
                     }
 
                     Console.WriteLine("1. Добавить товар");
@@ -127,23 +125,39 @@ namespace WebShopApp
             {
                 Console.WriteLine($"Доступные товары для добавления в категорию '{category.Name}' :");
                 Console.WriteLine();
+                var products = data.Warehouse.Where(p => p.ProductCategory == null).ToList();
 
-                var products = data.Warehouse.Where(p => p.ProductCategory == null);
-                foreach (Product product in products)
+                for (int i = 0; i < products.Count; i++)
                 {
-                    Console.WriteLine($"{product.Id}. {product.Name} => Стоимость: {product.Price}");
+                    Console.WriteLine($"{i + 1}. {products[i].Name} => Стоимость: {products[i].Price} рублей");
                 }
 
                 Console.WriteLine();
                 Console.Write("Введите товар для добавления: ");
-                int.TryParse(Console.ReadLine(), out int choice);
+                string addChoice = Console.ReadLine();
+                int.TryParse(addChoice, out int choice);
 
-                if (data.Categories.Any(p => p.Id == choice))
+                if(addChoice == "menu")
                 {
-                    Product addedProduct = data.Warehouse.FirstOrDefault(p => p.Id == choice);
+                    return;
+                }    
+
+                if (data.Warehouse.Any(p => p.Name == products[choice - 1].Name))
+                {
+                    Console.Clear();
+                    Console.WriteLine($"Товар {products[choice - 1].Name} добавлен в '{category.Name}'");
+                    Console.ReadLine();
+
+                    Product addedProduct = data.Warehouse.FirstOrDefault(p => p.Id == products[choice - 1].Id);
                     addedProduct.ProductCategory = category;
                     category.Products.Add(addedProduct);
                     data.SaveChanges();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Такого товара нет");
+                    Console.ReadLine();
                 }
             }
         }
@@ -153,17 +167,27 @@ namespace WebShopApp
             Console.WriteLine($"Категория '{category.Name}':");
             Console.WriteLine();
 
-            foreach (Product product in category.Products)
+            for (int i = 0; i < category.Products.Count; i++)
             {
-                Console.WriteLine($"{product.Id}. {product.Name} =>  Стоимость: {product.Price} рублей");
+                Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Стоимость: {category.Products[i].Price} рублей");
             }
 
             Console.WriteLine();
             Console.Write("Введите товар для удаления: ");
+            string removeChoice = Console.ReadLine();
             int.TryParse(Console.ReadLine(), out int choice);
 
-            if (category.Products.Any(p => p.Id == choice - 1))
+            if (removeChoice == "menu")
             {
+                return;
+            }
+
+            if (category.Products.Contains(category.Products[choice - 1]))
+            {
+                Console.Clear();
+                Console.WriteLine($"Товар {category.Products[choice - 1].Name} удален из '{category.Name}'");
+                Console.ReadLine();
+
                 using (AdminDataContext data = new AdminDataContext())
                 {
                     category.Products[choice - 1].ProductCategory = null;
@@ -171,6 +195,12 @@ namespace WebShopApp
                     data.SaveChanges();
                 }
             }    
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Такого товара нет");
+                Console.ReadLine();
+            }
         }               
     }
 }

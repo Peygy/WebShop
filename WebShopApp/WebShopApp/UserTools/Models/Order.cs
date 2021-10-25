@@ -10,5 +10,6 @@ namespace WebShopApp
         public int OrderNum { get; set; }
         public Customer User { get; set; }
         public string Status { get; set; }
+        public List<Product> OrderProducts { get; set; }
     }
 }

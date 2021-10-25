@@ -13,16 +13,9 @@ namespace WebShopApp
         public string Login { get; set; }
         public string Password { get; set; }
         public string SpecialKey { get; set; }
-        //public int Balance { get; set; }
-        public List<Order> UserOrder { get; set; }
         [NotMapped]
-        public List<Product> Basket { get; set; }
-
-        public Customer()
-        {
-            UserOrder = new List<Order>();
-            Basket = new List<Product>();
-        }
+        public List<Product> Basket { get; set; } = new List<Product>();
+        //public int Balance { get; set; }
 
         public void BasketInfo() // Вывод корзины
         {

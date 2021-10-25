@@ -69,7 +69,7 @@ namespace WebShopApp
                             exit = true;
                             break;
                         }
-                    case "addnewfountain":
+                    case "addfountain":
                         {
                             Console.Clear();
                             adminAct.AddAdmin();

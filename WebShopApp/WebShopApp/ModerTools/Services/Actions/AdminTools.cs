@@ -26,7 +26,7 @@ namespace WebShopApp
                     case "1":
                         {
                             Console.Clear();
-                            AddCategory();
+                            AddNewCategory();
                             break;
                         }
                     case "2":
@@ -39,6 +39,46 @@ namespace WebShopApp
                         {
                             return;
                         }
+                }
+            }
+        }
+
+        public void AddNewCategory() //Добавить новую категорию
+        {
+            bool exit = false;
+
+            while (!exit)
+            {
+                Console.WriteLine();
+                Console.Write("Название категории: ");
+                string categoryName = Console.ReadLine();
+
+                if (categoryName == "menu")
+                {
+                    return;
+                }
+
+                using (AdminDataContext data = new AdminDataContext())
+                {
+                    if (!data.Categories.Any(p => p.Name == categoryName))
+                    {
+                        Category category = new Category { Name = categoryName };
+                        data.Categories.Add(category);
+                        data.SaveChanges();
+
+                        Console.Clear();
+                        Console.WriteLine($"Категория {category.Name} добавлена");
+                        Console.ReadLine();
+                        exit = true;
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine();
+                        Console.WriteLine("Такая категория существует!");
+                        Console.ReadLine();
+                        Console.Clear();
+                    }
                 }
             }
         }
@@ -58,17 +98,24 @@ namespace WebShopApp
                 {
                     return;
                 }
+
                 if (data.Categories.Any(p => p.Id == categoryChoice))
                 {
                     Console.Clear();
-                    category = data.Categories.FirstOrDefault(p => p.Id == categoryChoice);
+                    category = data.Categories.Include(p => p.Products).FirstOrDefault(p => p.Id == categoryChoice);
                     Console.WriteLine($"Категория '{category.Name}':");
                     Console.WriteLine();
 
-                    foreach (Product product in category.Products)
+                    for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{product.Id}. {product.Name} =>  Стоимость: {product.Price}");
+                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Стоимость: {category.Products[i].Price}");
                     }
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Такой категории нет");
+                    Console.ReadLine();
                 }
             }
 
@@ -109,55 +156,18 @@ namespace WebShopApp
                         return;
                     }
             }
-        }
-
-        public void AddCategory() //Добавить категорию
-        {
-            bool exit = false;
-
-            while(!exit)
-            {
-                Console.WriteLine();
-                Console.Write("Название категории: ");
-                string categoryName = Console.ReadLine();
-
-                if(categoryName == "menu")
-                {
-                    return;
-                }
-
-                using (AdminDataContext data = new AdminDataContext())
-                {
-                    if (!data.Categories.Any(p => p.Name == categoryName))
-                    {
-                        Category category = new Category { Name = categoryName };
-                        data.Categories.Add(category);
-                        data.SaveChanges();
-                        exit = true;
-                    }
-                    else
-                    {
-                        Console.Clear();
-                        Console.WriteLine();
-                        Console.WriteLine("Такая категория существует!");
-                        Console.ReadLine();
-                        Console.Clear();
-                    }
-                }
-            }
-        }      
+        }          
 
         public void RenameCategory(Category category) //Переименновать категорию
         {
             bool exit = false;
-            string categoryNameOld = "";
+            string categoryNameOld = category.Name;
             string categoryNameNew = "";
 
             while (!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущее название категории: {category.Name}");
-                categoryNameOld = category.Name;
+                Console.WriteLine($"Текущее название категории: {categoryNameOld}");
 
                 Console.Write("Введите новое название категории: ");
                 categoryNameNew = Console.ReadLine();
@@ -186,6 +196,7 @@ namespace WebShopApp
                 }
             }
 
+            Console.Clear();
             Console.WriteLine();
             Console.WriteLine($"Старое название категории: {categoryNameOld}");
             Console.WriteLine();
@@ -208,6 +219,10 @@ namespace WebShopApp
                     category.Products.Clear();
                     data.Categories.Remove(category);
                     data.SaveChanges();
+
+                    Console.Clear();
+                    Console.WriteLine($"Категория {category.Name} удалена");
+                    Console.ReadLine();
                 }
             }
         }
@@ -229,7 +244,7 @@ namespace WebShopApp
                 case "1":
                     {
                         Console.Clear();
-                        AddProduct();
+                        AddNewProduct();
                         break;
                     }
                 case "2":
@@ -251,7 +266,7 @@ namespace WebShopApp
             }
         } 
         
-        public void AddProduct() //Добавить продукт
+        public void AddNewProduct() //Добавить новый продукт
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -301,7 +316,7 @@ namespace WebShopApp
 
                     if (Console.ReadLine() == "1")
                     {
-                        category = data.Categories.FirstOrDefault(p => p.Name == productCategoryName);
+                        category = data.Categories.Include(p => p.Products).FirstOrDefault(с => с.Name == productCategoryName);
                         Product newProduct = new Product { Name = productName, ProductCategory = category, Price = productPrice };
                         data.Warehouse.Add(newProduct);
                         category.Products.Add(newProduct);
@@ -328,8 +343,12 @@ namespace WebShopApp
             using (AdminDataContext data = new AdminDataContext())
             {
                 Console.Clear();
-                product = data.Warehouse.FirstOrDefault(p => p.Id == choice);
-                product.ProductInfo();
+                var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
+
+                foreach(Product product in products.Where(p => p.Id == choice))
+                {
+                    product.ProductInfo();
+                }
             }
 
             Console.WriteLine("1. Изменить название");
@@ -368,6 +387,7 @@ namespace WebShopApp
             using (AdminDataContext data = new AdminDataContext())
             {
                 bool exit = false;
+                var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
 
                 while (!exit)
                 {
@@ -377,23 +397,24 @@ namespace WebShopApp
                     Console.Write("Продукт для удаления: ");
                     string removeProduct = Console.ReadLine();
                     int.TryParse(removeProduct, out int productChoice);
-
+;
                     if (removeProduct == "menu")
                     {
                         return;
                     }
 
-                    if (data.Warehouse.Any(p => p.Id == productChoice))
-                    {
-                        Product deletedProduct = new Product();
-                        deletedProduct = data.Warehouse.FirstOrDefault(p => p.Id == productChoice);
-                        deletedProduct.ProductCategory.Products.Remove(deletedProduct);
+                    if (data.Warehouse.Any(p => p.Id == products[productChoice - 1].Id))
+                    {                        
+                        Product deletedProduct = products[productChoice - 1];
+
+                        category = deletedProduct.ProductCategory;
+                        category.Products.Remove(deletedProduct);
                         data.Warehouse.Remove(deletedProduct);
-                        data.SaveChanges();
+                        data.SaveChanges();                       
 
                         Console.Clear();
                         Console.WriteLine();
-                        Console.WriteLine("Товар успешно удален");
+                        Console.WriteLine($"Товар {deletedProduct.Name} успешно удален");
                         Console.ReadLine();
                         exit = true;
                     }
@@ -412,14 +433,13 @@ namespace WebShopApp
         public void EditProductRename(Product product) //Переименновать продукт
         {
             bool exit = false;
-            string productNameOld = "";
+            string productNameOld = product.Name;
             string productNameNew = "";
 
             while (!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущее название продукта: {product.Name}");
-                productNameOld = product.Name;
+                Console.WriteLine($"Текущее название продукта: {productNameOld}");
 
                 Console.Write("Введите новое название продукта: ");
                 productNameNew = Console.ReadLine();
@@ -447,19 +467,25 @@ namespace WebShopApp
                     }
                 }
             }
+
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine($"Старое название продукта: {productNameOld}");
+            Console.WriteLine();
+            Console.WriteLine($"Новое название продукта: {productNameNew}");
+            Console.ReadLine();
         }
 
         public void EditProductCategory(Product product) //Поменять категорию продукта
         {
             bool exit = false;
-            string productCategOld = "";
+            string productCategOld = product.ProductCategory.Name;
             string productCategNew = "";
 
             while(!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущая категория продукта: {product.ProductCategory.Name}");
-                productCategOld = product.ProductCategory.Name;
+                Console.WriteLine($"Текущая категория продукта: {productCategOld}");
 
                 Console.Write("Введите новую категорию продукта: ");
                 productCategNew = Console.ReadLine();
@@ -488,27 +514,35 @@ namespace WebShopApp
                     }                   
                 }
             }
+
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine($"Старая категория продукта: {productCategOld}");
+            Console.WriteLine();
+            Console.WriteLine($"Новая категория продукта: {productCategNew}");
+            Console.ReadLine();
         }
 
         public void EditProductPrice(Product product) //Поменять стоимость продукта
         {
             bool exit = false;
+            int productPriceOld = product.Price;
+            int productPriceNew = 0;
 
             while (!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущая стоимость продукта: {product.Price}");
-                int productPriceOld = product.Price;
+                Console.WriteLine($"Текущая стоимость продукта: {productPriceOld}");
 
                 Console.Write("Введите новую стоимость продукта: ");
-                string price = Console.ReadLine();
+                string priceNew = Console.ReadLine();
 
-                if (price == "menu")
+                if (priceNew == "menu")
                 {
                     return;
                 }
 
-                int.TryParse(price, out int productPriceNew);
+                int.TryParse(priceNew, out productPriceNew);
 
                 using (AdminDataContext data = new AdminDataContext())
                 {
@@ -527,7 +561,14 @@ namespace WebShopApp
                         Console.Clear();
                     }
                 }
-            }       
+            }
+
+            Console.Clear();
+            Console.WriteLine();
+            Console.WriteLine($"Старая стоимость продукта: {productPriceOld}");
+            Console.WriteLine();
+            Console.WriteLine($"Новая стоимость продукта: {productPriceNew}");
+            Console.ReadLine();
         }
 
 
@@ -538,11 +579,18 @@ namespace WebShopApp
             moderAct.ViewAllOrders();
 
             Console.WriteLine();
-            Console.WriteLine("1. Удалить заказ");
+            Console.WriteLine("1. Просмотреть заказ");
+            Console.WriteLine("2. Удалить заказ");
 
             switch (Console.ReadLine())
             {
                 case "1":
+                    {
+                        Console.Clear();
+                        OrdersView();
+                        break;
+                    }
+                case "2":
                     {
                         Console.Clear();
                         OrderRemove();
@@ -552,6 +600,41 @@ namespace WebShopApp
                     {
                         return;
                     }
+            }
+        }
+
+        public void OrdersView() // Просмотр заказа
+        {
+            moderAct.ViewAllOrders();            
+
+            Console.WriteLine();
+            Console.Write("Введите заказ для просмотра: ");
+            string orderForView = Console.ReadLine();
+            int.TryParse(orderForView, out int orderNumber);
+
+            if (orderForView == "menu")
+            {
+                return;
+            }
+
+            using (AdminDataContext data = new AdminDataContext())
+            {
+                var orders = data.Orders.Include(p => p.User).ToList();
+
+                if (data.Orders.Any(p => p.Id == orders[orderNumber - 1].Id))
+                {
+                    Console.WriteLine($"Номер заказа: {orders[orderNumber - 1].OrderNum}");
+                    Console.WriteLine($"Пользователь: {orders[orderNumber - 1].User.Login}");
+                    Console.WriteLine($"Статус: {orders[orderNumber - 1].Status}");
+                    Console.WriteLine();
+                    Console.WriteLine("В заказе:");
+
+                    for (int i = 0; i < orders[orderNumber - 1].OrderProducts.Count; i++)
+                    {
+                        Console.WriteLine($"Название: {orders[orderNumber - 1].OrderProducts[i].Name} => Цена: {orders[orderNumber - 1].OrderProducts[i].Price} рублей");
+                    }
+                    Console.ReadLine();
+                }                
             }
         }
 
@@ -569,14 +652,16 @@ namespace WebShopApp
 
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (data.Orders.Any(p => p.Id == orderId))
+                    var orders = data.Orders.Include(p => p.User).ToList();
+
+                    if (data.Orders.Any(p => p.Id == orders[orderId - 1].Id))
                     {
-                        data.Orders.Remove(data.Orders.FirstOrDefault(p => p.Id == orderId));
+                        data.Orders.Remove(data.Orders.FirstOrDefault(p => p.Id == orders[orderId - 1].Id));
                         data.SaveChanges();
 
                         Console.Clear();
                         Console.WriteLine();
-                        Console.WriteLine("Товар успешно удален");
+                        Console.WriteLine($"Заказ №{orders[orderId - 1].OrderNum} успешно удален");
                         Console.ReadLine();
                         exit = true;
                     }
@@ -631,14 +716,16 @@ namespace WebShopApp
 
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (data.Users.Any(p => p.Id == userId))
+                    var customers = data.Users.Include(p => p.Basket).ToList();
+
+                    if (data.Users.Any(p => p.Id == customers[userId - 1].Id))
                     {
-                        data.Users.Remove(data.Users.FirstOrDefault(p => p.Id == userId));
+                        data.Users.Remove(data.Users.FirstOrDefault(p => p.Id == customers[userId - 1].Id));
                         data.SaveChanges();
 
                         Console.Clear();
                         Console.WriteLine();
-                        Console.WriteLine("Пользователь успешно удален");
+                        Console.WriteLine($"Пользователь '{customers[userId - 1].Login}' успешно удален");
                         Console.ReadLine();
                         exit = true;
                     }
@@ -758,14 +845,16 @@ namespace WebShopApp
 
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (data.Moders.Any(p => p.Id == moderId))
+                    var moders = data.Moders.Where(p => p.Login != "Peygy").ToList();
+
+                    if (data.Moders.Any(p => p.Id == moders[moderId - 1].Id))
                     {
-                        data.Moders.Remove(data.Moders.FirstOrDefault(p => p.Id == moderId));
+                        data.Moders.Remove(data.Moders.FirstOrDefault(p => p.Id == moders[moderId - 1].Id));
                         data.SaveChanges();
 
                         Console.Clear();
                         Console.WriteLine();
-                        Console.WriteLine("Модератор успешно удален");
+                        Console.WriteLine($"Модератор '{moders[moderId - 1].Login}' успешно удален");
                         Console.ReadLine();
                         exit = true;
                     }

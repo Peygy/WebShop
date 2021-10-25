@@ -91,7 +91,6 @@ namespace WebShopApp
                 using (UserDataContext data = new UserDataContext())
                 {
                     Order order = new Order { OrderNum = orderNumber, User = user, Status = "На складе" };
-                    user.UserOrder.Add(order);
                     data.Orders.Add(order);
                     data.SaveChanges();
                 }
@@ -134,35 +133,36 @@ namespace WebShopApp
 
             while(!accept)
             {
-                if(user.UserOrder.Count == 0)
-                {
-                    Console.Clear();
-                    Console.WriteLine("У Вас нет заказов!");
-                    Console.ReadLine();
-                    return;
-                }
-
-                Console.WriteLine("*Для выхода в меню введите - menu");
-                Console.WriteLine("Ваши заказы: ");
-                Console.WriteLine();
-
                 using (UserDataContext data = new UserDataContext())
                 {
-                    var orders = data.Orders.Where(u => u.User == user).ToList();
+                    var orders = data.Orders.Include(p => p.User).Where(u => u.User == user).ToList();
 
-                    foreach (Order order in orders)
+                    if (orders.Count == 0)
                     {
-                        Console.WriteLine($"{order.Id}. {order.OrderNum}");
+                        Console.Clear();
+                        Console.WriteLine("У Вас нет заказов!");
+                        Console.ReadLine();
+                        return;
+                    }
+
+                    Console.WriteLine("*Для выхода в меню введите - menu");
+                    Console.WriteLine("Ваши заказы: ");
+                    Console.WriteLine();
+
+                    for (int i = 0; i < orders.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {orders[i].OrderNum}");
                     }
 
                     Console.WriteLine();
                     string input = Console.ReadLine();
+                    int.TryParse(input, out int OrderInput);
+
                     if (input.Contains("menu"))
                     {
                         return;
                     }
 
-                    int.TryParse(input, out int OrderInput);
                     if (OrderInput <= orders.Count && OrderInput > 0)
                     {
                         Console.Clear();
@@ -171,7 +171,12 @@ namespace WebShopApp
                         Console.WriteLine($"Статус заказа: {orders[OrderInput - 1].Status}");
                         Console.WriteLine();
                         Console.WriteLine("У Вас в заказе:");
-                        user.BasketInfo();
+
+                        for (int i = 0; i < orders[OrderInput - 1].OrderProducts.Count; i++)
+                        {
+                            Console.WriteLine($"Название: {orders[OrderInput - 1].OrderProducts[i].Name} => Цена: {orders[OrderInput - 1].OrderProducts[i].Price} рублей");
+                        }
+
                         Console.WriteLine("1. Удалить заказ");
 
                         if (Console.ReadLine() == "1")
@@ -184,8 +189,8 @@ namespace WebShopApp
 
                             if (Console.ReadLine() == "1")
                             {
+                                orders[OrderInput - 1].OrderProducts.Clear();
                                 data.Orders.Remove(orders[OrderInput - 1]);
-                                user.UserOrder.RemoveAt(OrderInput - 1);
                                 data.SaveChanges();
                             }
                         }
@@ -211,8 +216,15 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
+                    var UserOrder = data.Orders.Include(p => p.User).Where(c => c.User == user);
+
+                    foreach(Order order in UserOrder)
+                    {
+                        order.OrderProducts.Clear();
+                        data.Orders.Remove(order);
+                    }
+
                     user.Basket.Clear();
-                    user.UserOrder.Clear();
                     data.Users.Remove(user);
                     data.SaveChanges();
                 }
