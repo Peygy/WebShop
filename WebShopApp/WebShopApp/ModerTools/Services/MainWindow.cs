@@ -64,8 +64,7 @@ namespace WebShopApp
                             exit = true;
                             break;
                         }
-                    // case "whitefountain":
-                    case "w":
+                    case "whitefountain":
                         {
                             Console.Clear();
                             user = entry.SingIn();

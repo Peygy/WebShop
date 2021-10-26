@@ -22,7 +22,7 @@ namespace WebShopApp
                 Console.Clear();
                 Console.WriteLine("Меню модерации магазина:");
                 Console.WriteLine("1. Просмотреть/Редактировать категории");
-                Console.WriteLine("2. Просмотреть продукты");
+                Console.WriteLine("2. Просмотреть товары");
                 Console.WriteLine("3. Посмотреть заказы");
                 Console.WriteLine("4. Посмотреть пользователей");
                 Console.WriteLine("5. Выход");

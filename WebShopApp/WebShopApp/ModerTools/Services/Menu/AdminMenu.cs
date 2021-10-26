@@ -24,7 +24,7 @@ namespace WebShopApp
                 Console.WriteLine();
                 Console.WriteLine("Меню админа:");
                 Console.WriteLine("1. Добавить/Удалить/Редактировать категорию"); 
-                Console.WriteLine("2. Добавить/Удалить/Редактировать продукт"); 
+                Console.WriteLine("2. Добавить/Удалить/Редактировать товар"); 
                 Console.WriteLine("3. Посмотреть/Удалить заказы");
                 Console.WriteLine("4. Посмотреть/Удалить пользователей");
                 Console.WriteLine("5. Добавить/Удалить модератора");

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class Moderator
+    class Moderator // Класс Модератора
     {
         public int Id { get; set; }
         public string Login { get; set; }

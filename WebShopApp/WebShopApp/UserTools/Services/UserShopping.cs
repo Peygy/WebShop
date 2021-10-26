@@ -6,9 +6,10 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class UserShopping // Покупка продуктов
+    class UserShopping // Покупка товаров
     {
         Customer user;
+        ModerTools tools;
 
         public UserShopping(Customer UserInput)
         {
@@ -21,33 +22,24 @@ namespace WebShopApp
 
             while (!accept)
             {
-                string CatChoice; // Для выбора категории
-                int CategoryInput;
-
                 Console.WriteLine("*Для выхода в меню введите - menu");
                 Console.WriteLine();
-                Console.WriteLine("КАТЕГОРИИ ПРОДУКТОВ");
-                Console.WriteLine("Выберите нужную вам категорию");
+                tools.ViewAllCategories();
                 Console.WriteLine();
+                Console.Write("Выберите нужную вам категорию: ");
+                string categoryChoice = Console.ReadLine();
+                int.TryParse(categoryChoice, out int CategoryInput);
 
                 using (UserDataContext data = new UserDataContext())
                 {
-                    var categories = data.Categories.ToList();
+                    var categories = data.Categories.ToList();                    
 
-                    foreach (Category category in categories)
-                    {
-                        Console.WriteLine($"{category.Id + 1}. {category.Name}");                       
-                    }
-
-                    Console.WriteLine();
-                    CatChoice = Console.ReadLine();
-                    if (CatChoice.Contains("menu"))
+                    if (categoryChoice.Contains("menu"))
                     {
                         return;
                     }
-
-                    int.TryParse(CatChoice, out CategoryInput);
-                    if (CategoryInput <= categories.Count && CategoryInput > 0)
+                   
+                    if (categories.Any(p => p.Id == categories[CategoryInput - 1].Id))
                     {
                         ProductOutput(categories[CategoryInput - 1].Id);
                         accept = true;
@@ -62,59 +54,57 @@ namespace WebShopApp
             }
         }
 
-        public void ProductOutput(int categoryId) // Вывод продуктов
+        public void ProductOutput(int categoryId) // Вывод товаров
         {
             bool accept = false;
             
             while (!accept)
             {
-                string PrChoice; // Для выбора продукта
-                int ProductInput;
-
                 Console.WriteLine("*Для выхода в меню введите - menu");
-                Console.WriteLine();
-                Console.WriteLine("ПРОДУКТЫ");
-                Console.WriteLine("Выберите нужный вам товар");
-                Console.WriteLine();
+                Console.WriteLine();               
 
                 using (UserDataContext data = new UserDataContext())
                 {
-                    var products = data.Warehouse.Where(p => p.ProductCategory.Id == categoryId).ToList();
+                    var products = data.Warehouse.Include(p => p.ProductCategory).Where(p => p.ProductCategory.Id == categoryId).ToList();
 
-                    foreach (Product product in products)
+                    Console.WriteLine($"Все продукты категории '{data.Categories.FirstOrDefault(p => p.Id == categoryId).Name}':");
+                    Console.WriteLine();
+                    for (int i = 0; i < products.Count; i++)
                     {
-                        Console.WriteLine($"{product.Id + 1}. {product.Name}");
+                        Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
                     }
 
                     Console.WriteLine();
-                    PrChoice = Console.ReadLine();
-                    if (PrChoice.Contains("menu"))
+                    Console.Write("Выберите нужный вам товар: ");
+                    string productChoice = Console.ReadLine();
+                    int.TryParse(productChoice, out int productNum);
+
+                    if (productChoice.Contains("menu"))
                     {
                         return;
                     }
 
-                    int.TryParse(PrChoice, out ProductInput);
-                    if (ProductInput <= products.Count && ProductInput > 0)
+                    if (products.Count < productNum)
                     {
                         Console.Clear();
-                        products[ProductInput - 1].ProductInfo();
+                        products[productNum - 1].ProductInfo();
                         Console.WriteLine("1. Добавить в корзину");
                         Console.WriteLine("2. Вернуться в меню");
                         Console.WriteLine();
 
                         if (Console.ReadLine() == "1")
                         {
-                            user.Basket.Add(products[ProductInput - 1]);
+                            user.Basket.Add(products[productNum - 1]);
                             data.SaveChanges();
                             Console.Clear();
                             Console.WriteLine("Товар успешно добавлен в корзину! Нажмите Enter");
                             Console.ReadLine();
-                            accept = true;
                         }
+                        accept = true;
                     }
                     else
                     {
-                        Console.WriteLine("Такого номера категории не существует! Нажмите Enter и введите другой номер!");
+                        Console.WriteLine("Такого номера товара не существует! Нажмите Enter и введите другой номер!");
                         Console.ReadLine();
                         Console.Clear();
                     }

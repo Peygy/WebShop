@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class Admin : Moderator
+    class Admin : Moderator // Класс Админа
     {
 
     }

@@ -22,11 +22,11 @@ namespace WebShopApp
             }
         }
 
-        public void ViewAllProducts() // Посмотреть все продукты
+        public void ViewAllProducts() // Посмотреть все товары
         {
             using (AdminDataContext data = new AdminDataContext())
             {
-                Console.WriteLine("Все продукты:");
+                Console.WriteLine("Все товары:");
                 Console.WriteLine();
                 var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
 
@@ -34,7 +34,7 @@ namespace WebShopApp
                 {
                     string category = products[i].ProductCategory == null ? "Пусто" : $"{products[i].ProductCategory.Name}";
 
-                    Console.WriteLine($"{i + 1}. {products[i].Name} => Категория: {category}, Стоимость: {products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {products[i].Name} => Категория: {category}, Цена: {products[i].Price} рублей");
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace WebShopApp
 
                     for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Стоимость: {category.Products[i].Price} рублей");
+                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price} рублей");
                     }
 
                     Console.WriteLine("1. Добавить товар");
@@ -119,7 +119,7 @@ namespace WebShopApp
             }
         }
 
-        public void AddProduct(Category category) // Добавить продукт
+        public void AddProduct(Category category) // Добавить товар
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -129,7 +129,7 @@ namespace WebShopApp
 
                 for (int i = 0; i < products.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {products[i].Name} => Стоимость: {products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
                 }
 
                 Console.WriteLine();
@@ -162,14 +162,14 @@ namespace WebShopApp
             }
         }
 
-        public void RemoveProduct(Category category) // Удалить продукт
+        public void RemoveProduct(Category category) // Удалить товар
         {
             Console.WriteLine($"Категория '{category.Name}':");
             Console.WriteLine();
 
             for (int i = 0; i < category.Products.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Стоимость: {category.Products[i].Price} рублей");
+                Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Цена: {category.Products[i].Price} рублей");
             }
 
             Console.WriteLine();

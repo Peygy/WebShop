@@ -92,10 +92,10 @@ namespace WebShopApp
                 {
                     Order order = new Order { OrderNum = orderNumber, User = user, Status = "На складе" };
                     data.Orders.Add(order);
+                    user.Basket.Clear();
                     data.SaveChanges();
                 }
                 Console.WriteLine("Заказ успешно оформлен, следите за его статусом!");
-                user.Basket.Clear();
                 Console.ReadLine();
             }
         }
@@ -116,6 +116,7 @@ namespace WebShopApp
             Console.Write("Какой хотите удалить товар: ");
             int.TryParse(Console.ReadLine(), out int prodNum);
             user.Basket.RemoveAt(prodNum - 1);
+
             using (UserDataContext data = new UserDataContext())
             {
                 user.Basket.RemoveAt(prodNum - 1);

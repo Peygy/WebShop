@@ -108,7 +108,7 @@ namespace WebShopApp
 
                     for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Стоимость: {category.Products[i].Price}");
+                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price}");
                     }
                 }
                 else
@@ -230,14 +230,14 @@ namespace WebShopApp
         
 
 
-        public void ProductSetUp() // Добавить/Удалить/Редактировать продукты
+        public void ProductSetUp() // Добавить/Удалить/Редактировать товары
         {
             moderAct.ViewAllProducts();
 
             Console.WriteLine();
-            Console.WriteLine("1. Добавить");
-            Console.WriteLine("2. Редактировать");
-            Console.WriteLine("3. Удалить");
+            Console.WriteLine("1. Добавить товар");
+            Console.WriteLine("2. Редактировать товар");
+            Console.WriteLine("3. Удалить товар");
 
             switch (Console.ReadLine())
             {
@@ -266,7 +266,7 @@ namespace WebShopApp
             }
         } 
         
-        public void AddNewProduct() //Добавить новый продукт
+        public void AddNewProduct() //Добавить новый товар
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -278,7 +278,7 @@ namespace WebShopApp
                     int categoryChoice;
                     string productCategoryName = "";
 
-                    Console.Write("Название продукта: ");
+                    Console.Write("Название товара: ");
                     string productName = Console.ReadLine();
 
                     if (productName == "menu")
@@ -292,7 +292,7 @@ namespace WebShopApp
                         moderAct.ViewAllCategories();
 
                         Console.WriteLine();
-                        Console.Write("Категория продукта: ");
+                        Console.Write("Категория товара: ");
                         int.TryParse(Console.ReadLine(), out categoryChoice);
 
                         if (data.Categories.Any(p => p.Id == categoryChoice))
@@ -303,13 +303,13 @@ namespace WebShopApp
                     }
 
                     Console.Clear();
-                    Console.Write("Стоимость продукта: ");
+                    Console.Write("Цена товара: ");
                     int.TryParse(Console.ReadLine(), out int productPrice);
 
                     Console.Clear();
-                    Console.WriteLine($"Название продукта: {productName}");
-                    Console.WriteLine($"Категория продукта: {productCategoryName}");
-                    Console.WriteLine($"Стоимость продукта: {productPrice} рублей");
+                    Console.WriteLine($"Название товара: {productName}");
+                    Console.WriteLine($"Категория товара: {productCategoryName}");
+                    Console.WriteLine($"Цена товара: {productPrice} рублей");
                     Console.WriteLine();
                     Console.WriteLine("1. Подтвердить");
                     Console.WriteLine("2. Составить заново");
@@ -327,11 +327,11 @@ namespace WebShopApp
             }
         }
 
-        public void EditProduct() //Редактировать продукт
+        public void EditProduct() //Редактировать товар
         {
             moderAct.ViewAllProducts();
             Console.WriteLine();
-            Console.Write("Выберите продукт для редактирования: ");
+            Console.Write("Выберите товар для редактирования: ");
             string editProduct = Console.ReadLine();
             int.TryParse(editProduct, out int choice);
 
@@ -351,9 +351,9 @@ namespace WebShopApp
                 }
             }
 
-            Console.WriteLine("1. Изменить название");
-            Console.WriteLine("2. Изменить категорию");
-            Console.WriteLine("3. Изменить стоимость");
+            Console.WriteLine("1. Изменить название товара");
+            Console.WriteLine("2. Изменить категорию товара");
+            Console.WriteLine("3. Изменить стоимость товара");
 
             switch(Console.ReadLine())
             {
@@ -382,7 +382,7 @@ namespace WebShopApp
             }
         }
 
-        public void RemoveProduct() //Удалить продукт
+        public void RemoveProduct() //Удалить товар
         {
             using (AdminDataContext data = new AdminDataContext())
             {
@@ -394,7 +394,7 @@ namespace WebShopApp
                     moderAct.ViewAllProducts(); 
 
                     Console.WriteLine();
-                    Console.Write("Продукт для удаления: ");
+                    Console.Write("Товар для удаления: ");
                     string removeProduct = Console.ReadLine();
                     int.TryParse(removeProduct, out int productChoice);
 ;
@@ -430,7 +430,7 @@ namespace WebShopApp
             }
         }
 
-        public void EditProductRename(Product product) //Переименновать продукт
+        public void EditProductRename(Product product) //Переименновать товар
         {
             bool exit = false;
             string productNameOld = product.Name;
@@ -439,9 +439,9 @@ namespace WebShopApp
             while (!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущее название продукта: {productNameOld}");
+                Console.WriteLine($"Текущее название товара: {productNameOld}");
 
-                Console.Write("Введите новое название продукта: ");
+                Console.Write("Введите новое название товара: ");
                 productNameNew = Console.ReadLine();
 
                 if (productNameNew == "menu")
@@ -461,7 +461,7 @@ namespace WebShopApp
                     {
                         Console.Clear();
                         Console.WriteLine();
-                        Console.WriteLine("Такой продукт существует!");
+                        Console.WriteLine("Такой товар существует!");
                         Console.ReadLine();
                         Console.Clear();
                     }
@@ -470,13 +470,13 @@ namespace WebShopApp
 
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine($"Старое название продукта: {productNameOld}");
+            Console.WriteLine($"Старое название товара: {productNameOld}");
             Console.WriteLine();
-            Console.WriteLine($"Новое название продукта: {productNameNew}");
+            Console.WriteLine($"Новое название товара: {productNameNew}");
             Console.ReadLine();
         }
 
-        public void EditProductCategory(Product product) //Поменять категорию продукта
+        public void EditProductCategory(Product product) //Поменять категорию товара
         {
             bool exit = false;
             string productCategOld = product.ProductCategory.Name;
@@ -485,9 +485,9 @@ namespace WebShopApp
             while(!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущая категория продукта: {productCategOld}");
+                Console.WriteLine($"Текущая категория товара: {productCategOld}");
 
-                Console.Write("Введите новую категорию продукта: ");
+                Console.Write("Введите новую категорию товара: ");
                 productCategNew = Console.ReadLine();
 
                 if (productCategNew == "menu")
@@ -517,13 +517,13 @@ namespace WebShopApp
 
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine($"Старая категория продукта: {productCategOld}");
+            Console.WriteLine($"Старая категория товара: {productCategOld}");
             Console.WriteLine();
-            Console.WriteLine($"Новая категория продукта: {productCategNew}");
+            Console.WriteLine($"Новая категория товара: {productCategNew}");
             Console.ReadLine();
         }
 
-        public void EditProductPrice(Product product) //Поменять стоимость продукта
+        public void EditProductPrice(Product product) //Поменять цену товара
         {
             bool exit = false;
             int productPriceOld = product.Price;
@@ -532,9 +532,9 @@ namespace WebShopApp
             while (!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущая стоимость продукта: {productPriceOld}");
+                Console.WriteLine($"Текущая цена товара: {productPriceOld}");
 
-                Console.Write("Введите новую стоимость продукта: ");
+                Console.Write("Введите новую цену товара: ");
                 string priceNew = Console.ReadLine();
 
                 if (priceNew == "menu")
@@ -556,7 +556,7 @@ namespace WebShopApp
                     {
                         Console.Clear();
                         Console.WriteLine();
-                        Console.WriteLine("Стоимость не может быть отрицательной!");
+                        Console.WriteLine("Цена не может быть отрицательной!");
                         Console.ReadLine();
                         Console.Clear();
                     }
@@ -565,9 +565,9 @@ namespace WebShopApp
 
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine($"Старая стоимость продукта: {productPriceOld}");
+            Console.WriteLine($"Старая цена товара: {productPriceOld}");
             Console.WriteLine();
-            Console.WriteLine($"Новая стоимость продукта: {productPriceNew}");
+            Console.WriteLine($"Новая цена товара: {productPriceNew}");
             Console.ReadLine();
         }
 

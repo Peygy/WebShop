@@ -6,16 +6,16 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class Product // Продукт
+    class Product // Класс Товара
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
         public Category ProductCategory { get; set; }
         
-        public void ProductInfo() // Инфо продукта
+        public void ProductInfo() // Инфо товара
         {
-            Console.WriteLine($"Название продукта: {Name}");
+            Console.WriteLine($"Название товара: {Name}");
             if(ProductCategory.Name == null)
             {
                 Console.WriteLine("Категории нет");
@@ -24,7 +24,7 @@ namespace WebShopApp
             {
                 Console.WriteLine($"Категория: {ProductCategory.Name}");
             }            
-            Console.WriteLine($"Стоимость: {Price}");
+            Console.WriteLine($"Цена: {Price}");
             Console.WriteLine();
         }
     }

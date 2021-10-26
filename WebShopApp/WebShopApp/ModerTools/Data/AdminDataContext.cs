@@ -15,7 +15,7 @@ namespace WebShopApp
 
         public AdminDataContext()
         {
-            Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
