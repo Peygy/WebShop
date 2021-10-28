@@ -10,12 +10,13 @@ namespace WebShopApp
     {              
         public void ViewAllCategories() // Посмотреть все категории
         {
-            Console.WriteLine("Все категории:");
-            Console.WriteLine();
-
             using (AdminDataContext data = new AdminDataContext())
             {
-                foreach (Category category in data.Categories)
+                Console.WriteLine("Все категории:");
+                Console.WriteLine();
+                var categories = data.Categories.Include(p => p.Products).ToList();
+
+                foreach (Category category in categories)
                 {
                     Console.WriteLine($"{category.Id}. {category.Name}");
                 }               

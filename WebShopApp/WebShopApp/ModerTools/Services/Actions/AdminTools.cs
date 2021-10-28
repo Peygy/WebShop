@@ -104,10 +104,12 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (data.Categories.Any(p => p.Id == categoryChoice))
+                    var categories = data.Categories.Include(p => p.Products).ToList();
+
+                    if (data.Categories.Any(p => p.Id == categories[categoryChoice].Id))
                     {
                         Console.Clear();
-                        category = data.Categories.Include(p => p.Products).FirstOrDefault(p => p.Id == categoryChoice);
+                        category = data.Categories.Include(p => p.Products).FirstOrDefault(p => p.Id == categories[categoryChoice].Id);
                         Console.WriteLine($"Категория '{category.Name}':");
                         Console.WriteLine();
 
@@ -321,10 +323,11 @@ namespace WebShopApp
                             Console.WriteLine();
                             Console.Write("Категория товара: ");
                             int.TryParse(Console.ReadLine(), out categoryChoice);
+                            var categories = data.Categories.Include(p => p.Products).ToList();
 
-                            if (data.Categories.Any(p => p.Id == categoryChoice))
+                            if (data.Categories.Any(p => p.Id == categories[categoryChoice].Id))
                             {
-                                productCategoryName = data.Categories.FirstOrDefault(p => p.Id == categoryChoice).Name;
+                                productCategoryName = data.Categories.FirstOrDefault(p => p.Id == categories[categoryChoice].Id).Name;
                                 categoryCheck = true;
                             }
                         }
@@ -561,12 +564,14 @@ namespace WebShopApp
                 {
                     using (AdminDataContext data = new AdminDataContext())
                     {
-                        if (data.Categories.Any(p => p.Id == newCategId))
+                        var categories = data.Categories.Include(p => p.Products).ToList();
+
+                        if (data.Categories.Any(p => p.Id == categories[newCategId].Id))
                         {
-                            category = data.Categories.Include(c => c.Products).FirstOrDefault(p => p.Id == newCategId);
+                            category = data.Categories.Include(c => c.Products).FirstOrDefault(p => p.Id == categories[newCategId].Id);
                             data.Warehouse.Include(c => c.ProductCategory).FirstOrDefault(p => p.ProductCategory.Name == productCategOld).ProductCategory = category;
                             data.SaveChanges();
-                            newCategName = data.Categories.FirstOrDefault(p => p.Id == newCategId).Name;
+                            newCategName = data.Categories.FirstOrDefault(p => p.Id == categories[newCategId].Id).Name;
                             exit = true;
                         }
                         else
