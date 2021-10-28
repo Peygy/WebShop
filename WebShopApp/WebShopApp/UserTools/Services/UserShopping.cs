@@ -8,11 +8,11 @@ namespace WebShopApp
 {
     class UserShopping // Покупка товаров
     {
+        ModerTools moderAct = new ModerTools();
         Customer user;
-        ModerTools tools;
 
         public UserShopping(Customer UserInput)
-        {
+        {            
             user = UserInput;
         }
 
@@ -24,7 +24,7 @@ namespace WebShopApp
             {
                 Console.WriteLine("*Для выхода в меню введите - menu");
                 Console.WriteLine();
-                tools.ViewAllCategories();
+                moderAct.ViewAllCategories();
                 Console.WriteLine();
                 Console.Write("Выберите нужную вам категорию: ");
                 string categoryChoice = Console.ReadLine();
@@ -63,51 +63,58 @@ namespace WebShopApp
                 Console.WriteLine("*Для выхода в меню введите - menu");
                 Console.WriteLine();               
 
-                using (UserDataContext data = new UserDataContext())
+                try
                 {
-                    var products = data.Warehouse.Include(p => p.ProductCategory).Where(p => p.ProductCategory.Id == categoryId).ToList();
-
-                    Console.WriteLine($"Все продукты категории '{data.Categories.FirstOrDefault(p => p.Id == categoryId).Name}':");
-                    Console.WriteLine();
-                    for (int i = 0; i < products.Count; i++)
+                    using (UserDataContext data = new UserDataContext())
                     {
-                        Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
-                    }
+                        var products = data.Warehouse.Include(p => p.ProductCategory).Where(p => p.ProductCategory.Id == categoryId).ToList();
 
-                    Console.WriteLine();
-                    Console.Write("Выберите нужный вам товар: ");
-                    string productChoice = Console.ReadLine();
-                    int.TryParse(productChoice, out int productNum);
-
-                    if (productChoice.Contains("menu"))
-                    {
-                        return;
-                    }
-
-                    if (products.Count < productNum)
-                    {
-                        Console.Clear();
-                        products[productNum - 1].ProductInfo();
-                        Console.WriteLine("1. Добавить в корзину");
-                        Console.WriteLine("2. Вернуться в меню");
+                        Console.WriteLine($"Все продукты категории '{data.Categories.FirstOrDefault(p => p.Id == categoryId).Name}':");
                         Console.WriteLine();
-
-                        if (Console.ReadLine() == "1")
+                        for (int i = 0; i < products.Count; i++)
                         {
-                            user.Basket.Add(products[productNum - 1]);
-                            data.SaveChanges();
-                            Console.Clear();
-                            Console.WriteLine("Товар успешно добавлен в корзину! Нажмите Enter");
-                            Console.ReadLine();
+                            Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
                         }
-                        accept = true;
+
+                        Console.WriteLine();
+                        Console.Write("Выберите нужный вам товар: ");
+                        string productChoice = Console.ReadLine();
+                        int.TryParse(productChoice, out int productNum);
+
+                        if (productChoice.Contains("menu"))
+                        {
+                            return;
+                        }
+
+                        if (products.Count < productNum)
+                        {
+                            Console.Clear();
+                            products[productNum - 1].ProductInfo();
+                            Console.WriteLine("1. Добавить в корзину");
+                            Console.WriteLine("2. Вернуться в меню");
+                            Console.WriteLine();
+
+                            if (Console.ReadLine() == "1")
+                            {
+                                user.Basket.Add(products[productNum - 1]);
+                                data.SaveChanges();
+                                Console.Clear();
+                                Console.WriteLine("Товар успешно добавлен в корзину! Нажмите Enter");
+                                Console.ReadLine();
+                            }
+                            accept = true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Такого номера товара не существует! Нажмите Enter и введите другой номер!");
+                            Console.ReadLine();
+                            Console.Clear();
+                        }
                     }
-                    else
-                    {
-                        Console.WriteLine("Такого номера товара не существует! Нажмите Enter и введите другой номер!");
-                        Console.ReadLine();
-                        Console.Clear();
-                    }
+                }
+                catch(DbUpdateException ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }                
             }
         }

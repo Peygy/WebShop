@@ -20,7 +20,7 @@ namespace WebShopApp
                 string login = Console.ReadLine();
                 Console.Write("Введите Ваш Пароль: ");
                 string password = Console.ReadLine();
-
+               
                 using (AdminDataContext data = new AdminDataContext())
                 {
                     if(data.Users.Any(p => p.Login == login && p.Password == password))
@@ -36,7 +36,7 @@ namespace WebShopApp
                         if (key == data.Moders.FirstOrDefault(p => p.Login == login && p.Password == password).SpecialKey)
                         {
                             user = new Customer { Login = login, Password = password, SpecialKey = key };
-                            EndEntry = true;
+                            EndEntry = true;                            
                         }
                     }
                     else
@@ -47,6 +47,7 @@ namespace WebShopApp
                     }
                 }
             }
+
             return user;
         }
 
@@ -111,12 +112,20 @@ namespace WebShopApp
                 {
                     case "1":
                         {
-                            using (AdminDataContext data = new AdminDataContext())
+                            try
                             {
-                                user = new Customer { Login = login, Password = password, SpecialKey = "00" };
-                                data.Users.Add(user);
-                                data.SaveChanges();
+                                using (AdminDataContext data = new AdminDataContext())
+                                {
+                                    user = new Customer { Login = login, Password = password, SpecialKey = "00" };
+                                    data.Users.Add(user);
+                                    data.SaveChanges();
+                                }
                             }
+                            catch (DbUpdateException ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
+                            
                             EndRegistration = true;
                             break;
                         }

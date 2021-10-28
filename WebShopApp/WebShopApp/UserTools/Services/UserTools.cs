@@ -88,13 +88,21 @@ namespace WebShopApp
 
             if (Console.ReadLine() == "1")
             {
-                using (UserDataContext data = new UserDataContext())
+                try
                 {
-                    Order order = new Order { OrderNum = orderNumber, User = user, Status = "На складе" };
-                    data.Orders.Add(order);
-                    user.Basket.Clear();
-                    data.SaveChanges();
+                    using (UserDataContext data = new UserDataContext())
+                    {
+                        Order order = new Order { OrderNum = orderNumber, User = user, Status = "На складе" };
+                        data.Orders.Add(order);
+                        user.Basket.Clear();
+                        data.SaveChanges();
+                    }
                 }
+                catch (DbUpdateException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+           
                 Console.WriteLine("Заказ успешно оформлен, следите за его статусом!");
                 Console.ReadLine();
             }
@@ -117,10 +125,17 @@ namespace WebShopApp
             int.TryParse(Console.ReadLine(), out int prodNum);
             user.Basket.RemoveAt(prodNum - 1);
 
-            using (UserDataContext data = new UserDataContext())
+            try
             {
-                user.Basket.RemoveAt(prodNum - 1);
-                data.SaveChanges();
+                using (UserDataContext data = new UserDataContext())
+                {
+                    user.Basket.RemoveAt(prodNum - 1);
+                    data.SaveChanges();
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
             Console.Clear();
@@ -132,76 +147,83 @@ namespace WebShopApp
         {
             bool accept = false;
 
-            while(!accept)
+            while (!accept)
             {
-                using (UserDataContext data = new UserDataContext())
+                try
                 {
-                    var orders = data.Orders.Include(p => p.User).Where(u => u.User == user).ToList();
-
-                    if (orders.Count == 0)
+                    using (UserDataContext data = new UserDataContext())
                     {
-                        Console.Clear();
-                        Console.WriteLine("У Вас нет заказов!");
-                        Console.ReadLine();
-                        return;
-                    }
+                        var orders = data.Orders.Include(p => p.User).Where(u => u.User == user).ToList();
 
-                    Console.WriteLine("*Для выхода в меню введите - menu");
-                    Console.WriteLine("Ваши заказы: ");
-                    Console.WriteLine();
-
-                    for (int i = 0; i < orders.Count; i++)
-                    {
-                        Console.WriteLine($"{i + 1}. {orders[i].OrderNum}");
-                    }
-
-                    Console.WriteLine();
-                    string input = Console.ReadLine();
-                    int.TryParse(input, out int OrderInput);
-
-                    if (input.Contains("menu"))
-                    {
-                        return;
-                    }
-
-                    if (OrderInput <= orders.Count && OrderInput > 0)
-                    {
-                        Console.Clear();
-                        Console.WriteLine("*Для выхода в меню заказов введите - menu");
-                        Console.WriteLine($"Заказ номер: {orders[OrderInput - 1].OrderNum}");
-                        Console.WriteLine($"Статус заказа: {orders[OrderInput - 1].Status}");
-                        Console.WriteLine();
-                        Console.WriteLine("У Вас в заказе:");
-
-                        for (int i = 0; i < orders[OrderInput - 1].OrderProducts.Count; i++)
-                        {
-                            Console.WriteLine($"Название: {orders[OrderInput - 1].OrderProducts[i].Name} => Цена: {orders[OrderInput - 1].OrderProducts[i].Price} рублей");
-                        }
-
-                        Console.WriteLine("1. Удалить заказ");
-
-                        if (Console.ReadLine() == "1")
+                        if (orders.Count == 0)
                         {
                             Console.Clear();
-                            Console.WriteLine("Вы точно хотите удалить заказ?");
-                            Console.WriteLine("1. Да");
-                            Console.WriteLine("2. Нет");
+                            Console.WriteLine("У Вас нет заказов!");
+                            Console.ReadLine();
+                            return;
+                        }
+
+                        Console.WriteLine("*Для выхода в меню введите - menu");
+                        Console.WriteLine("Ваши заказы: ");
+                        Console.WriteLine();
+
+                        for (int i = 0; i < orders.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {orders[i].OrderNum}");
+                        }
+
+                        Console.WriteLine();
+                        string input = Console.ReadLine();
+                        int.TryParse(input, out int OrderInput);
+
+                        if (input.Contains("menu"))
+                        {
+                            return;
+                        }
+
+                        if (OrderInput <= orders.Count && OrderInput > 0)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("*Для выхода в меню заказов введите - menu");
+                            Console.WriteLine($"Заказ номер: {orders[OrderInput - 1].OrderNum}");
+                            Console.WriteLine($"Статус заказа: {orders[OrderInput - 1].Status}");
                             Console.WriteLine();
+                            Console.WriteLine("У Вас в заказе:");
+
+                            for (int i = 0; i < orders[OrderInput - 1].OrderProducts.Count; i++)
+                            {
+                                Console.WriteLine($"Название: {orders[OrderInput - 1].OrderProducts[i].Name} => Цена: {orders[OrderInput - 1].OrderProducts[i].Price} рублей");
+                            }
+
+                            Console.WriteLine("1. Удалить заказ");
 
                             if (Console.ReadLine() == "1")
                             {
-                                orders[OrderInput - 1].OrderProducts.Clear();
-                                data.Orders.Remove(orders[OrderInput - 1]);
-                                data.SaveChanges();
+                                Console.Clear();
+                                Console.WriteLine("Вы точно хотите удалить заказ?");
+                                Console.WriteLine("1. Да");
+                                Console.WriteLine("2. Нет");
+                                Console.WriteLine();
+
+                                if (Console.ReadLine() == "1")
+                                {
+                                    orders[OrderInput - 1].OrderProducts.Clear();
+                                    data.Orders.Remove(orders[OrderInput - 1]);
+                                    data.SaveChanges();
+                                }
                             }
                         }
+                        else
+                        {
+                            Console.WriteLine("Такого номера заказа не существует! Нажмите Enter и введите другой!");
+                            Console.ReadLine();
+                            Console.Clear();
+                        }
                     }
-                    else
-                    {
-                        Console.WriteLine("Такого номера заказа не существует! Нажмите Enter и введите другой!");
-                        Console.ReadLine();
-                        Console.Clear();
-                    }
+                }
+                catch (DbUpdateException ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }
         }
@@ -215,21 +237,28 @@ namespace WebShopApp
 
             if (Console.ReadLine() == "1")
             {
-                using (AdminDataContext data = new AdminDataContext())
+                try
                 {
-                    var UserOrder = data.Orders.Include(p => p.User).Where(c => c.User == user);
-
-                    foreach(Order order in UserOrder)
+                    using (AdminDataContext data = new AdminDataContext())
                     {
-                        order.OrderProducts.Clear();
-                        data.Orders.Remove(order);
-                    }
+                        var UserOrder = data.Orders.Include(p => p.User).Where(c => c.User == user);
 
-                    user.Basket.Clear();
-                    data.Users.Remove(user);
-                    data.SaveChanges();
+                        foreach (Order order in UserOrder)
+                        {
+                            order.OrderProducts.Clear();
+                            data.Orders.Remove(order);
+                        }
+
+                        user.Basket.Clear();
+                        data.Users.Remove(user);
+                        data.SaveChanges();
+                    }
                 }
-                
+                catch (DbUpdateException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
                 return true;
             }
             else

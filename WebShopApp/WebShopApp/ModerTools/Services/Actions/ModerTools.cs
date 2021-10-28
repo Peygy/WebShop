@@ -75,91 +75,106 @@ namespace WebShopApp
 
         public void EditCategory() // Редактировать категорию
         {
-            using (AdminDataContext data = new AdminDataContext())
+            Console.WriteLine();
+            Console.Write("Выберите категорию: ");
+            string choice = Console.ReadLine();
+
+            int.TryParse(choice, out int categoryChoice);
+
+            if (choice == "menu")
             {
-                Console.WriteLine();
-                Console.Write("Выберите категорию: ");
-                string choice = Console.ReadLine();
+                return;
+            }
 
-                int.TryParse(choice, out int categoryChoice);
-
-                if (choice == "menu")
+            try
+            {
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    return;
-                }
-                if (data.Categories.Any(p => p.Id == categoryChoice))
-                {
-                    Category category = data.Categories.Include(p => p.Products).FirstOrDefault(c => c.Id == categoryChoice);
-                    Console.WriteLine($"Категория '{category.Name}':");
-                    Console.WriteLine();
-
-                    for (int i = 0; i < category.Products.Count; i++)
+                    if (data.Categories.Any(p => p.Id == categoryChoice))
                     {
-                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price} рублей");
-                    }
+                        Category category = data.Categories.Include(p => p.Products).FirstOrDefault(c => c.Id == categoryChoice);
+                        Console.WriteLine($"Категория '{category.Name}':");
+                        Console.WriteLine();
 
-                    Console.WriteLine("1. Добавить товар");
-                    Console.WriteLine("2. Удалить товар");
-                    switch (Console.ReadLine())
-                    {
-                        case "1":
-                            {
-                                Console.Clear();
-                                AddProduct(category);
-                                break;
-                            }
-                        case "2":
-                            {
-                                Console.Clear();
-                                RemoveProduct(category);
-                                break;
-                            }
+                        for (int i = 0; i < category.Products.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price} рублей");
+                        }
+
+                        Console.WriteLine("1. Добавить товар");
+                        Console.WriteLine("2. Удалить товар");
+                        switch (Console.ReadLine())
+                        {
+                            case "1":
+                                {
+                                    Console.Clear();
+                                    AddProduct(category);
+                                    break;
+                                }
+                            case "2":
+                                {
+                                    Console.Clear();
+                                    RemoveProduct(category);
+                                    break;
+                                }
+                        }
                     }
                 }
             }
+            catch(DbUpdateException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }   
         }
 
         public void AddProduct(Category category) // Добавить товар
         {
-            using (AdminDataContext data = new AdminDataContext())
+            try
             {
-                Console.WriteLine($"Доступные товары для добавления в категорию '{category.Name}' :");
-                Console.WriteLine();
-                var products = data.Warehouse.Where(p => p.ProductCategory == null).ToList();
-
-                for (int i = 0; i < products.Count; i++)
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
-                }
+                    Console.WriteLine($"Доступные товары для добавления в категорию '{category.Name}' :");
+                    Console.WriteLine();
+                    var products = data.Warehouse.Where(p => p.ProductCategory == null).ToList();
 
-                Console.WriteLine();
-                Console.Write("Введите товар для добавления: ");
-                string addChoice = Console.ReadLine();
-                int.TryParse(addChoice, out int choice);
+                    for (int i = 0; i < products.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
+                    }
 
-                if(addChoice == "menu")
-                {
-                    return;
-                }    
+                    Console.WriteLine();
+                    Console.Write("Введите товар для добавления: ");
+                    string addChoice = Console.ReadLine();
+                    int.TryParse(addChoice, out int choice);
 
-                if (data.Warehouse.Any(p => p.Name == products[choice - 1].Name))
-                {
-                    Console.Clear();
-                    Console.WriteLine($"Товар {products[choice - 1].Name} добавлен в '{category.Name}'");
-                    Console.ReadLine();
+                    if (addChoice == "menu")
+                    {
+                        return;
+                    }
 
-                    Product addedProduct = data.Warehouse.FirstOrDefault(p => p.Id == products[choice - 1].Id);
-                    addedProduct.ProductCategory = category;
-                    category.Products.Add(addedProduct);
-                    data.SaveChanges();
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine("Такого товара нет");
-                    Console.ReadLine();
+                    if (data.Warehouse.Any(p => p.Name == products[choice - 1].Name))
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"Товар {products[choice - 1].Name} добавлен в '{category.Name}'");
+                        Console.ReadLine();
+
+                        Product addedProduct = data.Warehouse.FirstOrDefault(p => p.Id == products[choice - 1].Id);
+                        addedProduct.ProductCategory = category;
+                        category.Products.Add(addedProduct);
+                        data.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Такого товара нет");
+                        Console.ReadLine();
+                    }
                 }
             }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }  
         }
 
         public void RemoveProduct(Category category) // Удалить товар
@@ -188,11 +203,18 @@ namespace WebShopApp
                 Console.WriteLine($"Товар {category.Products[choice - 1].Name} удален из '{category.Name}'");
                 Console.ReadLine();
 
-                using (AdminDataContext data = new AdminDataContext())
+                try
                 {
-                    category.Products[choice - 1].ProductCategory = null;
-                    category.Products.RemoveAt(choice - 1);
-                    data.SaveChanges();
+                    using (AdminDataContext data = new AdminDataContext())
+                    {
+                        category.Products[choice - 1].ProductCategory = null;
+                        category.Products.RemoveAt(choice - 1);
+                        data.SaveChanges();
+                    }
+                }
+                catch(DbUpdateException ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             }    
             else
