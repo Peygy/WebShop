@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class ModerMenu // Меню Модерации
+    class ModerMenu // Меню Модерации / Moderation Menu
     {
         ModerFrontTools moderAct;
 
@@ -13,7 +13,7 @@ namespace WebShopApp
             moderAct = new ModerFrontTools();
         }
 
-        public void ModerShowcase() //Витрина модератора
+        public void ModerShowcase() // Вывод меню модератора / Output moderation menu
         {
             bool exit = false;
 

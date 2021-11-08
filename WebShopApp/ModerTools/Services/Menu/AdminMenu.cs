@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class AdminMenu // Меню Админа
+    class AdminMenu // Меню Админа / Admin menu
     {
         
         AdminFrontTools adminAct;
@@ -14,7 +14,7 @@ namespace WebShopApp
             adminAct = new AdminFrontTools();
         }
 
-        public void AdmShowcase() //Витрина админа
+        public void AdmShowcase() // Вывод меню админа / Output admin menu
         {
             bool exit = false;
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class Category // Класс Категории
+    class Category // Класс Категории / Category class
     {
         public int Id { get; set; }
         public string Name { get; set; }

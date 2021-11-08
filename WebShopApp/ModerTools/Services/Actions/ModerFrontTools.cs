@@ -4,34 +4,35 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class ModerFrontTools
+    class ModerFrontTools // Класс управления модерации / Moderation control class
     {
         ModerBackTools moderAct = new ModerBackTools();
+
         Category category;
         Product product;
 
-        public void ViewAllCategories() // Посмотреть все категории
+        public void ViewAllCategories() // Посмотреть все категории / View all categories
         {
             Console.WriteLine("Все категории:");
             Console.WriteLine();
             moderAct.ViewAllCategories_Back();
         }
 
-        public void ViewAllProducts() // Посмотреть все товары
+        public void ViewAllProducts() // Посмотреть все товары / View all products
         {
             Console.WriteLine("Все товары:");
             Console.WriteLine();
             moderAct.ViewAllProducts_Back();
         }
 
-        public void ViewAllOrders() // Посмотреть все заказы
+        public void ViewAllOrders() // Посмотреть все заказы / View all orders
         {
             Console.WriteLine("Все заказы:");
             Console.WriteLine();
             moderAct.ViewAllOrders_Back();
         }
 
-        public void ViewAllUsers() // Посмотреть всех пользователей
+        public void ViewAllUsers() // Посмотреть всех пользователей / View all users
         {
             Console.WriteLine("Все пользователи:");
             Console.WriteLine();
@@ -40,7 +41,7 @@ namespace WebShopApp
 
 
 
-        public void EditCategory() // Редактировать категорию
+        public void EditCategory() // Редактировать категорию / Edit category
         {
             bool exit = false;
 
@@ -102,7 +103,7 @@ namespace WebShopApp
             }
         }
 
-        public void AddProduct(Category category) // Добавить товар
+        public void AddProduct(Category category) // Добавить продукт в категорию / Add product to category
         {
             bool exit = false;
 
@@ -129,7 +130,6 @@ namespace WebShopApp
                     Console.Clear();
                     Console.WriteLine($"Товар {product.Name} добавлен в '{category.Name}'");
                     Console.ReadLine();
-
                     exit = true;
                 }
                 else
@@ -141,7 +141,7 @@ namespace WebShopApp
             }
         }
 
-        public void RemoveProduct(Category category) // Удалить товар
+        public void RemoveProduct(Category category) // Удалить товар из категории / Remove product from category
         {
             bool exit = false;
 
@@ -171,7 +171,6 @@ namespace WebShopApp
                     Console.Clear();
                     Console.WriteLine($"Товар {category.Products[choice].Name} удален из '{category.Name}'");
                     Console.ReadLine();
-
                     exit = true;
                 }
                 else

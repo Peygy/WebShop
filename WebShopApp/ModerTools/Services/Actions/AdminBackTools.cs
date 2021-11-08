@@ -1,16 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class AdminBackTools // Инструменты админа
+    class AdminBackTools // Класс инструментов(реализации) модерации для админов / Admin moderation tools(realization) class
     {
         ModerBackTools moderAct = new ModerBackTools();
       
-        public bool AddNewCategory_Back(string categoryName) //Добавить новую категорию
+        public bool AddNewCategory_Back(string categoryName) // Добавление новой категории / Adding new category
         {
             try
             {
@@ -35,10 +34,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool EditCategory_Back(int categoryChoice, ref Category category) //Редактировать категорию
+        public bool EditCategory_Back(int categoryChoice, ref Category category) // Редактирование категории / Editing category
         {
             try
             {
@@ -63,10 +62,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool RenameCategory_Back(string oldName, ref string newName) //Переименновать категорию
+        public bool RenameCategory_Back(string oldName, ref string newName) // Переименование категории / Renaming category
         {
             try
             {
@@ -93,10 +92,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool RemoveCategory_Back(Category category)
+        public bool RemoveCategory_Back(Category category) // Удаление категории / Removing category
         {
             try
             {
@@ -119,19 +118,19 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
 
 
-
-        public bool AddNewProduct_Back(int categoryChoice, string productName, ref string productCategoryName, int productPrice, int key) //Добавить новый товар
+        public bool AddNewProduct_Back(int categoryChoice, string productName, ref string productCategoryName, int productPrice, int key) // Добавление нового товара / Adding new product
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
                     var categories = data.Categories.Include(p => p.Products).ToList();
+
                     if (key == 0)
                     {
                         if (data.Categories.Any(p => p.Id == categories[categoryChoice].Id))
@@ -162,27 +161,30 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public void EditProduct_Back(int choice, ref Product product) //Редактировать товар
+        public bool EditProduct_Back(int choice, ref Product product) // Редактирование товара / Editing product
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
-                {
-                    Console.Clear();
+                {                   
                     product = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == choice);
                     product.ProductInfo();
+
+                    return true;
                 }
             }
             catch (DbUpdateException ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+            return false;
         }
 
-        public bool EditProductRename_Back(string oldName, ref string newName) //Переименновать товар
+        public bool EditProductRename_Back(string oldName, ref string newName) // Переименование товара / Renaming product
         {
             try
             {
@@ -195,6 +197,7 @@ namespace WebShopApp
                     {
                         data.Warehouse.FirstOrDefault(p => p.Name == productNameOld).Name = productNameNew;
                         data.SaveChanges();
+
                         return true;
                     }
                     else
@@ -208,10 +211,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool EditProductCategory_Back(int newCategId, string productCategOld, ref Category category) //Поменять категорию товара
+        public bool EditProductCategory_Back(int newCategId, string productCategOld, ref Category category) // Изменение категории товара / Changing product category
         {
             try
             {
@@ -238,10 +241,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public void EditProductPrice_Back(Product product, int productPriceNew) //Поменять цену товара
+        public bool EditProductPrice_Back(Product product, int productPriceNew) // Изменение цены товара / Changing product price
         {
             try
             {
@@ -249,16 +252,20 @@ namespace WebShopApp
                 {
                     data.Warehouse.FirstOrDefault(p => p.Name == product.Name).Price = productPriceNew;
                     data.SaveChanges();
+
+                    return true;
                 }
             }
             catch (DbUpdateException ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+            return false;
         }
 
 
-        public bool RemoveProduct_Back(int productChoice, ref Product deletedProduct) //Удалить товар
+        public bool RemoveProduct_Back(int productChoice, ref Product deletedProduct) // Удаление товара / Removing product
         {
             try
             {
@@ -287,12 +294,12 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
 
 
-        public bool OrdersView_Back(int orderNumber, ref Order order) // Просмотр заказа
+        public bool OrdersView_Back(int orderNumber, ref Order order) // Просмотр заказа / Viewing order
         {
             try
             {
@@ -309,10 +316,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool OrderRemove_Back(int orderId, ref Order order) //Удалить заказ
+        public bool OrderRemove_Back(int orderId, ref Order order) // Удаление заказа / Removing order
         {
             try
             {
@@ -339,12 +346,12 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
 
 
-        public bool UserRemove_Back(int userId, ref Customer customer) //Удалить пользователя
+        public bool UserRemove_Back(int userId, ref Customer customer) // Удаление пользователя / Removing user
         {
             try
             {
@@ -380,12 +387,12 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
 
 
-        public bool AddModer_Back(string moderLogin, string moderPassword, int key) //Добавить модератора
+        public bool AddModer_Back(string moderLogin, string moderPassword, int key) // Добавление модератора / Adding moder
         {
             try
             {
@@ -417,10 +424,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool ModerRemove_Back(int moderId, ref Moderator moder) //Удалить модератора
+        public bool ModerRemove_Back(int moderId, ref Moderator moder) // Удаление модератора / Removing moder
         {
             try
             {
@@ -447,12 +454,12 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
 
 
-        public bool AddAdmin_Back(string adminLogin, string adminPassword, int key) //Добавить админа
+        public bool AddAdmin_Back(string adminLogin, string adminPassword, int key) // Добавление админа / Adding admin
         {
             try
             {
@@ -484,20 +491,31 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public void ViewAllModers_Back() // Посмотреть всех модераторов
+        public bool ViewAllModers_Back() // Посмотреть всех модераторов
         {
-            using (AdminDataContext data = new AdminDataContext())
+            try
             {
-                var moderators = data.Moders.Where(p => p.Login != "Peygy").ToList();
-
-                for (int i = 0; i < moderators.Count; i++)
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    Console.WriteLine($"{i + 1}. {moderators[i].Login} => Пароль: {moderators[i].Password}, Спец. ключ: {moderators[i].SpecialKey}");
+                    var moderators = data.Moders.Where(p => p.Login != "Peygy").ToList();
+
+                    for (int i = 0; i < moderators.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {moderators[i].Login} => Пароль: {moderators[i].Password}, Спец. ключ: {moderators[i].SpecialKey}");
+                    }
+
+                    return true;
                 }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
         }
     }
 }

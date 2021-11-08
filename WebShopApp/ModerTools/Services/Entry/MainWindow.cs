@@ -4,18 +4,18 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class MainWindow
+    class MainWindow // Начальный экран / Home screen
     {
         UserEntryFront entry;
         Customer user;
 
-        public MainWindow() // Начальный экран
+        public MainWindow()
         {
             entry = new UserEntryFront();
             AppStart();
         }
 
-        public void AppStart() // Старт приложения
+        public void AppStart() // Метод запуска приложения / App launch method
         {
             bool exit = false;
 

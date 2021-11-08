@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class UserDataContext : DbContext
+    class UserDataContext : DbContext // Класс контекста для пользователя / Context class for user
     {
         public DbSet<Product> Warehouse { get; set; }
         public DbSet<Order> Orders { get; set; }

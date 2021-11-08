@@ -1,73 +1,116 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace WebShopApp
 {
-    class ModerBackTools // Инструменты модерации
+    class ModerBackTools // Класс инструментов(реализации) модерации / Moderation tool(realization) class
     {
-        public void ViewAllCategories_Back() // Посмотреть все категории
+        public bool ViewAllCategories_Back() // Вывод всех категорий / Output all categories
         {
-            using (AdminDataContext data = new AdminDataContext())
+            try
             {
-                var categories = data.Categories.Include(p => p.Products).ToList();
-
-                foreach (Category category in categories)
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    Console.WriteLine($"{category.Id}. {category.Name}");
+                    var categories = data.Categories.Include(p => p.Products).ToList();
+
+                    foreach (Category category in categories)
+                    {
+                        Console.WriteLine($"{category.Id}. {category.Name}");
+                    }
+
+                    return true;
                 }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
         }
 
-        public void ViewAllProducts_Back() // Посмотреть все товары
+        public bool ViewAllProducts_Back() // Вывод всех продутков / Output all products
         {
-            using (AdminDataContext data = new AdminDataContext())
+            try
             {
-                var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
-
-                for (int i = 0; i < products.Count; i++)
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    string category = products[i].ProductCategory == null ? "Пусто" : $"{products[i].ProductCategory.Name}";
+                    var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
 
-                    Console.WriteLine($"{i + 1}. {products[i].Name} => Категория: {category}, Цена: {products[i].Price} рублей");
+                    for (int i = 0; i < products.Count; i++)
+                    {
+                        string category = products[i].ProductCategory == null ? "Пусто" : $"{products[i].ProductCategory.Name}";
+
+                        Console.WriteLine($"{i + 1}. {products[i].Name} => Категория: {category}, Цена: {products[i].Price} рублей");
+                    }
+
+                    return true;
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
         }
 
-        public void ViewAllOrders_Back() // Посмотреть все заказы
+        public bool ViewAllOrders_Back() // Вывод всех заказов / Output all orders
         {
-            using (AdminDataContext data = new AdminDataContext())
+            try
             {
-                var orders = data.Orders.Include(p => p.User).ToList();
-
-                for (int i = 0; i < orders.Count; i++)
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    Console.WriteLine($"{i + 1}. {orders[i].OrderNum} => Пользователь: {orders[i].User.Login}, Статус: {orders[i].Status}");
+                    var orders = data.Orders.Include(p => p.User).ToList();
+
+                    for (int i = 0; i < orders.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {orders[i].OrderNum} => Пользователь: {orders[i].User.Login}, Статус: {orders[i].Status}");
+                    }
+
+                    return true;
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return false;
         }
 
-        public void ViewAllUsers_Back() // Посмотреть всех пользователей
+        public bool ViewAllUsers_Back() // Вывод всех пользователей / Output all users
         {
-            using (AdminDataContext data = new AdminDataContext())
+            try
             {
-                var customers = data.Users.Include(p => p.Basket).ToList();
-
-                for (int i = 0; i < customers.Count; i++)
+                using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Where(p => p.User == customers[i]).ToList();
+                    var customers = data.Users.Include(p => p.Basket).ToList();
 
-                    Console.WriteLine($"{i + 1}. {customers[i].Login} => Кол-во заказов: {orders.Count}, Кол-во товаров в корзине: {customers[i].Basket.Count}");
+                    for (int i = 0; i < customers.Count; i++)
+                    {
+                        var orders = data.Orders.Where(p => p.User == customers[i]).ToList();
+
+                        Console.WriteLine($"{i + 1}. {customers[i].Login} => Кол-во заказов: {orders.Count}, Кол-во товаров в корзине: {customers[i].Basket.Count}");
+                    }
+
+                    return true;
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }            
+
+            return false;
         }
 
 
 
-        public bool EditCategory_Back(int categoryChoice, ref Category category) // Редактировать категорию
+        public bool EditCategory_Back(int categoryChoice, ref Category category) // Редактирование категории / Editing category
         {
             try
             {
@@ -92,10 +135,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool AddProduct_Back(int choice, ref Product addedProduct, Category category, int key) // Добавить товар
+        public bool AddProduct_Back(int choice, ref Product addedProduct, Category category, int key) // Добавление товара / Adding product
         {
             try
             {
@@ -135,10 +178,10 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
 
-        public bool RemoveProduct_Back(int choice, Category category) // Удалить товар
+        public bool RemoveProduct_Back(int choice, Category category) // Удаление товара / Removing product
         {
             try
             {
@@ -163,7 +206,7 @@ namespace WebShopApp
                 Console.WriteLine(ex.Message);
             }
 
-            return true;
+            return false;
         }
     }
 }

@@ -4,14 +4,14 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class Product // Класс Товара
+    class Product // Класс Товара / Product class
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
         public Category ProductCategory { get; set; }
 
-        public void ProductInfo() // Инфо товара
+        public void ProductInfo() // Информация товара / Product information
         {
             Console.WriteLine($"Название товара: {Name}");
             if (ProductCategory.Name == null)
@@ -23,6 +23,7 @@ namespace WebShopApp
                 Console.WriteLine($"Категория: {ProductCategory.Name}");
             }
             Console.WriteLine($"Цена: {Price}");
+            Console.WriteLine();
             Console.WriteLine();
         }
     }

@@ -4,18 +4,18 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class UserMenu // Меню для пользователя
+    class UserMenu // Меню Пользователя / User's menu
     {
         Customer user;
-        UserBackTools actions;
+        UserFrontTools actions;
 
         public UserMenu(Customer UserInput)
         {
-            actions = new UserBackTools();
+            actions = new UserFrontTools();
             user = UserInput;
         }
 
-        public void Showcase() // Витрина пользователя
+        public void Showcase() // Вывод меню пользователя / Output user's menu
         {
             bool exit = false;
 

@@ -6,7 +6,7 @@ namespace WebShopApp
     {
         static void Main(string[] args)
         {
-            MainWindow startApp = new MainWindow();
+            MainWindow launchApp = new MainWindow(); // Запуск приложения / App launch
         }
     }
 }
