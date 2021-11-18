@@ -43,6 +43,7 @@ namespace WebShopApp
 
         public void EditCategory() // Редактировать категорию / Edit category
         {
+            var products = new List<Product>();
             bool exit = false;
 
             while(!exit)
@@ -66,9 +67,14 @@ namespace WebShopApp
                     Console.WriteLine($"Категория '{category.Name}':");
                     Console.WriteLine();
 
+                    foreach (Product productLocal in category.Products)
+                    {
+                        products.Add(productLocal);
+                    }
+
                     for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price} рублей");
+                        Console.WriteLine($"{i + 1}. {products[i].Name} =>  Цена: {products[i].Price} рублей");
                     }
 
                     exit = true;
@@ -143,6 +149,7 @@ namespace WebShopApp
 
         public void RemoveProduct(Category category) // Удалить товар из категории / Remove product from category
         {
+            var products = new List<Product>();
             bool exit = false;
 
             while(!exit)
@@ -150,9 +157,14 @@ namespace WebShopApp
                 Console.WriteLine($"Категория '{category.Name}':");
                 Console.WriteLine();
 
+                foreach (Product productLocal in category.Products)
+                {
+                    products.Add(productLocal);
+                }
+
                 for (int i = 0; i < category.Products.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Цена: {category.Products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
                 }
 
                 Console.WriteLine();
@@ -169,7 +181,7 @@ namespace WebShopApp
                 if (moderAct.RemoveProduct_Back(choice, category))
                 {
                     Console.Clear();
-                    Console.WriteLine($"Товар {category.Products[choice].Name} удален из '{category.Name}'");
+                    Console.WriteLine($"Товар {products[choice].Name} удален из '{category.Name}'");
                     Console.ReadLine();
                     exit = true;
                 }

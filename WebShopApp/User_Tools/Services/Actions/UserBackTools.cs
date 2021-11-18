@@ -17,7 +17,7 @@ namespace WebShopApp
             {
                 using (UserDataContext data = new UserDataContext())
                 {
-                    var categories = data.Categories.ToList();
+                    var categories = data.Categories.Include(p => p.Products).ToList();
 
                     if (categories.Any(p => p.Id == categories[categoryInput].Id))
                     {
@@ -114,7 +114,8 @@ namespace WebShopApp
             {
                 using (UserDataContext data = new UserDataContext())
                 {
-                    user.Basket.RemoveAt(prodNum);
+                    Product product = data.Warehouse.FirstOrDefault(p => p.Id == prodNum);
+                    user.Basket.Remove(product);
                     data.SaveChanges();
 
                     return true;
@@ -198,7 +199,7 @@ namespace WebShopApp
                 using (UserDataContext data = new UserDataContext())
                 {
                     var userOrders = data.Users.Include(p => p.Order).Where(u => u.Order.User == user).ToList();
-                    var userForRemove = data.Users.Include(p => p.Order).FirstOrDefault(u => u.Id == user.Id);
+                    var userForRemove = data.Users.FirstOrDefault(u => u.Id == user.Id);
 
                     for (int i = 0; i < userOrders.Count; i++)
                     {

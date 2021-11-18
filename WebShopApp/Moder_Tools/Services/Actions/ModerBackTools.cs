@@ -159,7 +159,7 @@ namespace WebShopApp
                     {
                         if (data.Warehouse.Any(p => p.Name == products[choice].Name))
                         {
-                            addedProduct = data.Warehouse.FirstOrDefault(p => p.Id == products[choice].Id);
+                            addedProduct = data.Warehouse.Include(u => u.ProductCategory).FirstOrDefault(p => p.Id == products[choice].Id);
                             addedProduct.ProductCategory = category;
                             category.Products.Add(addedProduct);
                             data.SaveChanges();
@@ -186,11 +186,19 @@ namespace WebShopApp
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
-                {                    
-                    if(data.Warehouse.Any(p => p.Name == category.Products[choice].Name))
+                {
+                    var products = new List<Product>();
+
+                    foreach(Product product in category.Products)
                     {
-                        category.Products[choice].ProductCategory = null;
-                        category.Products.RemoveAt(choice);
+                        products.Add(product);
+                    }
+
+                    if (data.Warehouse.Any(p => p.Name == products[choice].Name))
+                    {
+                        Product product = data.Warehouse.Include(u => u.ProductCategory).FirstOrDefault(p => p.Id == choice);
+                        products[choice].ProductCategory = null;
+                        category.Products.Remove(product);
                         data.SaveChanges();
 
                         return true;

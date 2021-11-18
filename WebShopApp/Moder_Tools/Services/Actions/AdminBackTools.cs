@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class AdminBackTools // Класс инструментов(реализации) модерации для админов / Admin moderation tools(realization) class
+    public class AdminBackTools // Класс инструментов(реализации) модерации для админов / Admin moderation tools(realization) class
     {
         ModerBackTools moderAct = new ModerBackTools();
       
@@ -47,7 +47,7 @@ namespace WebShopApp
 
                     if (data.Categories.Any(p => p.Id == categories[categoryChoice].Id))
                     {
-                        category = data.Categories.Include(p => p.Products).FirstOrDefault(p => p.Id == categories[categoryChoice].Id);                                            
+                        category = categories.FirstOrDefault(p => p.Id == categories[categoryChoice].Id);                                            
 
                         return true;
                     }
@@ -76,7 +76,7 @@ namespace WebShopApp
 
                     if (!data.Categories.Any(p => p.Name == categoryNameNew))
                     {
-                        data.Categories.FirstOrDefault(p => p.Name == categoryNameOld).Name = categoryNameNew;
+                        data.Categories.Include(p => p.Products).FirstOrDefault(p => p.Name == categoryNameOld).Name = categoryNameNew;
                         data.SaveChanges();
 
                         return true;
@@ -101,9 +101,9 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    for (int i = 0; i < category.Products.Count(); i++)
+                    foreach (Product product in category.Products)
                     {
-                        category.Products[i].ProductCategory = null;
+                        product.ProductCategory = null;
                     }
 
                     category.Products.Clear();
@@ -148,6 +148,7 @@ namespace WebShopApp
                     {
                         Category category = data.Categories.Include(p => p.Products).FirstOrDefault(с => с.Name == data.Categories.FirstOrDefault(p => p.Id == categories[categoryChoice].Id).Name);
                         Product newProduct = new Product { Name = productName, ProductCategory = category, Price = productPrice };
+
                         data.Warehouse.Add(newProduct);
                         category.Products.Add(newProduct);
                         data.SaveChanges();
@@ -305,7 +306,7 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Include(p => p.User).ToList();
+                    var orders = data.Orders.Include(p => p.OrderProducts).Include(p => p.User).ToList();
                     order = orders[orderNumber];
 
                     return data.Orders.Any(p => p.Id == orders[orderNumber].Id);
@@ -325,7 +326,7 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Include(p => p.User).ToList();
+                    var orders = data.Orders.Include(p => p.OrderProducts).Include(p => p.User).ToList();
 
                     if (data.Orders.Any(p => p.Id == orders[orderId].Id))
                     {
@@ -361,8 +362,8 @@ namespace WebShopApp
 
                     if (data.Users.Any(p => p.Id == customers[userId].Id))
                     {
-                        var userOrders = data.Users.Include(p => p.Order).Where(u => u.Order.User == customers[userId]).ToList();
-                        customer = data.Users.Include(p => p.Order).FirstOrDefault(u => u.Id == customers[userId].Id);
+                        var userOrders = data.Users.Include(p => p.Basket).Include(p => p.Order).Where(u => u.Order.User == customers[userId]).ToList();
+                        customer = data.Users.Include(p => p.Basket).Include(p => p.Order).FirstOrDefault(u => u.Id == customers[userId].Id);
 
                         for (int i = 0; i < userOrders.Count; i++)
                         {

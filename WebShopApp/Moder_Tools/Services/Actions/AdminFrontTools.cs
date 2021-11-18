@@ -80,6 +80,7 @@ namespace WebShopApp
 
         public void EditCategory() // Редактировать категорию / Edit category
         {
+            var products = new List<Product>();
             bool exit = false;
 
             while (!exit)
@@ -104,9 +105,14 @@ namespace WebShopApp
                     Console.WriteLine($"Категория '{category.Name}':");
                     Console.WriteLine();
 
+                    foreach (Product productLocal in category.Products)
+                    {
+                        products.Add(productLocal);
+                    }
+
                     for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price}");
+                        Console.WriteLine($"{i + 1}. {products[i].Name} =>  Цена: {products[i].Price}");
                     }
 
                     exit = true;
@@ -588,6 +594,8 @@ namespace WebShopApp
 
         public void OrdersView() // Просмотр заказа / View order
         {
+            var products = new List<Product>();
+
             moderAct.ViewAllOrders();
 
             Console.WriteLine();
@@ -609,9 +617,14 @@ namespace WebShopApp
                 Console.WriteLine();
                 Console.WriteLine("В заказе:");
 
-                for (int i = 0; i < order.OrderProducts.Count; i++)
+                foreach(Product product in order.OrderProducts)
                 {
-                    Console.WriteLine($"Название: {order.OrderProducts[i].Name} => Цена: {order.OrderProducts[i].Price} рублей");
+                    products.Add(product);
+                }
+
+                for (int i = 0; i < products.Count; i++)
+                {
+                    Console.WriteLine($"Название: {products[i].Name} => Цена: {products[i].Price} рублей");
                 }
                 Console.ReadLine();
             }

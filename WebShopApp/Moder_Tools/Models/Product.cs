@@ -4,12 +4,13 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class Product // Класс Товара / Product class
+    public class Product // Класс Товара / Product class
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public int Price { get; set; }
         public Category ProductCategory { get; set; }
+        public Order Order { get; set; }
 
         public void ProductInfo() // Информация товара / Product information
         {

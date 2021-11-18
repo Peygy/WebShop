@@ -55,6 +55,7 @@ namespace WebShopApp
 
         public void ProductOutput(Category category, Customer user) // Товары для покупки / Products to buy
         {
+            var products = new List<Product>();
             bool accept = false;
 
             while (!accept)
@@ -64,9 +65,14 @@ namespace WebShopApp
                 Console.WriteLine($"Все продукты категории '{category.Name}':");
                 Console.WriteLine();
 
+                foreach(Product productLocal in category.Products)
+                {
+                    products.Add(productLocal);
+                }
+
                 for (int i = 0; i < category.Products.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Цена: {category.Products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
                 }
 
                 Console.WriteLine();
@@ -83,18 +89,18 @@ namespace WebShopApp
                 if (category.Products.Count > productNum)
                 {
                     Console.Clear();
-                    category.Products[productNum].ProductInfo();
+                    products[productNum].ProductInfo();
                     Console.WriteLine("1. Добавить в корзину");
                     Console.WriteLine("2. Вернуться в меню");
                     Console.WriteLine();
 
                     if (Console.ReadLine() == "1")
                     {
-                        Product product = category.Products[productNum];
+                        Product product = products[productNum];
                         userAct.ProductOutput_Back(product, user);
 
                         Console.Clear();
-                        Console.WriteLine($"Товар '{category.Products[productNum].Name}' успешно добавлен в корзину! Нажмите Enter");
+                        Console.WriteLine($"Товар '{products[productNum].Name}' успешно добавлен в корзину! Нажмите Enter");
                         Console.ReadLine();
                     }
 
@@ -227,6 +233,7 @@ namespace WebShopApp
 
         public void OrdersInfo(Customer user) // Заказы и удаление заказа / Orders and order remove
         {
+            var products = new List<Product>();
             int OrderInput = 0;
             bool accept = false;
 
@@ -267,9 +274,14 @@ namespace WebShopApp
                     Console.WriteLine();
                     Console.WriteLine("У Вас в заказе:");
 
-                    for (int i = 0; i < order.OrderProducts.Count; i++)
+                    foreach (Product product in order.OrderProducts)
                     {
-                        Console.WriteLine($"Название: {order.OrderProducts[i].Name} => Цена: {order.OrderProducts[i].Price} рублей");
+                        products.Add(product);
+                    }
+
+                    for (int i = 0; i < products.Count; i++)
+                    {
+                        Console.WriteLine($"Название: {products[i].Name} => Цена: {products[i].Price} рублей");
                     }
 
                     Console.WriteLine("1. Удалить заказ");
