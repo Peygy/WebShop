@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
-using WebShopApp;
 
-namespace WebShopTests
+namespace WebShopApp
 {
-    class TestDataContext : DbContext // Класс контекста для тестов / Context class for tests
+    public class TestDataContext : DbContext // Класс контекста для тестов / Context class for tests
     {
         public DbSet<Customer> Users { get; set; }
         public DbSet<Product> Warehouse { get; set; }

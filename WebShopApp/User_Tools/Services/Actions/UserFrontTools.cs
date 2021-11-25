@@ -15,9 +15,9 @@ namespace WebShopApp
 
         public void CategoriesOutput(Customer user) // Категории для покупки товаров / Categories for buying products 
         {
-            bool accept = false;
+            bool exit = false;
 
-            while (!accept)
+            while (!exit)
             {
                 Console.WriteLine("*Для выхода в меню введите - menu");
                 Console.WriteLine();
@@ -40,7 +40,7 @@ namespace WebShopApp
                     Console.Clear();
                     ProductOutput(category, user);
 
-                    accept = true;
+                    exit = true;
                 }
                 else
                 {
@@ -53,26 +53,20 @@ namespace WebShopApp
             }
         }
 
-        public void ProductOutput(Category category, Customer user) // Товары для покупки / Products to buy
+        public void ProductOutput(Category category, Customer user) // Товары для покупки и добваления в корзину / Products to buy and adding to the basket
         {
-            var products = new List<Product>();
-            bool accept = false;
+            bool exit = false;
 
-            while (!accept)
+            while (!exit)
             {
                 Console.WriteLine("*Для выхода в меню введите - menu");
                 Console.WriteLine();
                 Console.WriteLine($"Все продукты категории '{category.Name}':");
                 Console.WriteLine();
 
-                foreach(Product productLocal in category.Products)
-                {
-                    products.Add(productLocal);
-                }
-
                 for (int i = 0; i < category.Products.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Цена: {category.Products[i].Price} рублей");
                 }
 
                 Console.WriteLine();
@@ -89,22 +83,22 @@ namespace WebShopApp
                 if (category.Products.Count > productNum)
                 {
                     Console.Clear();
-                    products[productNum].ProductInfo();
+                    category.Products[productNum].ProductInfo();
                     Console.WriteLine("1. Добавить в корзину");
                     Console.WriteLine("2. Вернуться в меню");
                     Console.WriteLine();
 
                     if (Console.ReadLine() == "1")
                     {
-                        Product product = products[productNum];
-                        userAct.ProductOutput_Back(product, user);
+                        Product product = category.Products[productNum];
+                        userAct.AddToBasket_Back(product, user);
 
                         Console.Clear();
-                        Console.WriteLine($"Товар '{products[productNum].Name}' успешно добавлен в корзину! Нажмите Enter");
+                        Console.WriteLine($"Товар '{category.Products[productNum].Name}' успешно добавлен в корзину! Нажмите Enter");
                         Console.ReadLine();
                     }
 
-                    accept = true;
+                    exit = true;
                 }
                 else
                 {
@@ -211,6 +205,7 @@ namespace WebShopApp
             if (user.Basket.Count == 0)
             {
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine("Ваша корзина пуста!");
                 Console.ReadLine();
                 return;
@@ -235,9 +230,9 @@ namespace WebShopApp
         {
             var products = new List<Product>();
             int OrderInput = 0;
-            bool accept = false;
+            bool exit = false;
 
-            while (!accept)
+            while (!exit)
             {
                 if (userAct.OrdersInfo_Back(user, OrderInput, ref order, 0))
                 {

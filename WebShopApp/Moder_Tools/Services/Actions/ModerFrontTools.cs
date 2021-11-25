@@ -41,18 +41,19 @@ namespace WebShopApp
 
 
 
-        public void EditCategory() // Редактировать категорию / Edit category
+        public void EditCategory(ref Category CategoryForEdit) // Редактировать категорию / Edit category
         {
-            var products = new List<Product>();
             bool exit = false;
 
-            while(!exit)
+            while (!exit)
             {
                 ViewAllCategories();
 
                 Console.WriteLine();
-                Console.Write("Выберите категорию: ");
+                Console.Write("Категория для редактирования: ");
                 string choice = Console.ReadLine();
+                Console.Clear();
+
                 int.TryParse(choice, out int categoryChoice);
                 categoryChoice -= 1;
 
@@ -61,20 +62,15 @@ namespace WebShopApp
                     return;
                 }
 
-                if (moderAct.EditCategory_Back(categoryChoice, ref category))
+                if (moderAct.EditCategory_Back(categoryChoice, ref category)) // Из инструментов модератора / From moderator tools
                 {
-                    Console.Clear();
+                    CategoryForEdit = category;
                     Console.WriteLine($"Категория '{category.Name}':");
                     Console.WriteLine();
 
-                    foreach (Product productLocal in category.Products)
-                    {
-                        products.Add(productLocal);
-                    }
-
                     for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1}. {products[i].Name} =>  Цена: {products[i].Price} рублей");
+                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price}");
                     }
 
                     exit = true;
@@ -83,15 +79,21 @@ namespace WebShopApp
                 {
                     Console.Clear();
                     Console.WriteLine();
-                    Console.WriteLine("Такой категории не существует!");
+                    Console.WriteLine("Такой категории не существует");
                     Console.ReadLine();
                     Console.Clear();
                 }
             }
+        }
+
+        public void EditCategory_Menu() // Меню выбора редактирования категории / Category edit selection menu
+        {
+            EditCategory(ref category);
 
             Console.WriteLine();
             Console.WriteLine("1. Добавить товар");
             Console.WriteLine("2. Удалить товар");
+
             switch (Console.ReadLine())
             {
                 case "1":
@@ -106,6 +108,10 @@ namespace WebShopApp
                         RemoveProduct(category);
                         break;
                     }
+                case "menu":
+                    {
+                        return;
+                    }
             }
         }
 
@@ -118,7 +124,7 @@ namespace WebShopApp
                 Console.WriteLine($"Доступные товары для добавления в категорию '{category.Name}' :");
                 Console.WriteLine();
 
-                moderAct.AddProduct_Back(0, ref product, category, 0);
+                moderAct.AddProduct_Back(0, ref product, 0);
 
                 Console.WriteLine();
                 Console.Write("Введите товар для добавления: ");
@@ -131,7 +137,7 @@ namespace WebShopApp
                     return;
                 }
 
-                if (moderAct.AddProduct_Back(choice, ref product, category, 1))
+                if (moderAct.AddProduct_Back(choice, ref product, 1))
                 {
                     Console.Clear();
                     Console.WriteLine($"Товар {product.Name} добавлен в '{category.Name}'");
@@ -149,7 +155,6 @@ namespace WebShopApp
 
         public void RemoveProduct(Category category) // Удалить товар из категории / Remove product from category
         {
-            var products = new List<Product>();
             bool exit = false;
 
             while(!exit)
@@ -157,14 +162,9 @@ namespace WebShopApp
                 Console.WriteLine($"Категория '{category.Name}':");
                 Console.WriteLine();
 
-                foreach (Product productLocal in category.Products)
-                {
-                    products.Add(productLocal);
-                }
-
                 for (int i = 0; i < category.Products.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {products[i].Name} => Цена: {products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Цена: {category.Products[i].Price} рублей");
                 }
 
                 Console.WriteLine();
@@ -178,10 +178,10 @@ namespace WebShopApp
                     return;
                 }
 
-                if (moderAct.RemoveProduct_Back(choice, category))
+                if (moderAct.RemoveProduct_Back(choice, ref product, category))
                 {
                     Console.Clear();
-                    Console.WriteLine($"Товар {products[choice].Name} удален из '{category.Name}'");
+                    Console.WriteLine($"Товар {product.Name} удален из '{category.Name}'");
                     Console.ReadLine();
                     exit = true;
                 }

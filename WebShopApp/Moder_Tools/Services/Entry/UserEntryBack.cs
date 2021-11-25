@@ -14,22 +14,21 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (data.Users.Any(p => p.Login == login && p.Password == password))
+                    if (data.Users.Any(u => u.Login == login && u.Password == password))
                     {
-                        int userId = data.Users.FirstOrDefault(p => p.Login == login && p.Password == password).Id;
-                        user = new Customer { Id = userId, Login = login, Password = password, SpecialKey = "00" };
+                        user = data.Users.Include(u => u.Basket).Include(u => u.Orders).FirstOrDefault(u => u.Login == login && u.Password == password);
 
                         return true;
                     }
 
-                    if (data.Moders.Any(p => p.Login == login && p.Password == password))
+                    if (data.Moders.Any(m => m.Login == login && m.Password == password))
                     {
                         Console.Write("Ключ идентификации: ");
                         string key = Console.ReadLine();
 
-                        if (key == data.Moders.FirstOrDefault(p => p.Login == login && p.Password == password).SpecialKey)
+                        if (key == data.Moders.FirstOrDefault(m => m.Login == login && m.Password == password).SpecialKey)
                         {
-                            int userId = data.Moders.FirstOrDefault(p => p.Login == login && p.Password == password && p.SpecialKey == key).Id;
+                            int userId = data.Moders.FirstOrDefault(m => m.Login == login && m.Password == password && m.SpecialKey == key).Id;
                             user = new Customer { Id = userId, Login = login, Password = password, SpecialKey = key };
 
                             return true;
@@ -44,7 +43,9 @@ namespace WebShopApp
             }
             catch(Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -59,7 +60,7 @@ namespace WebShopApp
                 {
                     if(key == 0)
                     {
-                        if (!data.Users.Any(p => p.Login == login))
+                        if (!data.Users.Any(u => u.Login == login))
                         {
                             return true;
                         }
@@ -73,7 +74,7 @@ namespace WebShopApp
                         user = new Customer { Login = login, Password = password, SpecialKey = "00" };
                         data.Users.Add(user);
                         data.SaveChanges();
-                        user = data.Users.FirstOrDefault(p => p.Login == login && p.Password == password && p.SpecialKey == "00");
+                        user = data.Users.Include(u => u.Basket).Include(u => u.Orders).FirstOrDefault(u => u.Login == login && u.Password == password && u.SpecialKey == "00");
 
                         return true;
                     }
@@ -81,7 +82,9 @@ namespace WebShopApp
             }
             catch(Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;

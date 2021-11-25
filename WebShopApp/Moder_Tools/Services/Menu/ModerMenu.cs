@@ -33,8 +33,7 @@ namespace WebShopApp
                     case "1":
                         {
                             Console.Clear();
-                            moderAct.ViewAllCategories();
-                            moderAct.EditCategory();
+                            moderAct.EditCategory_Menu();
                             break;
                         }
                     case "2":

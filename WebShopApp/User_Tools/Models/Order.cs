@@ -9,13 +9,10 @@ namespace WebShopApp
         public int Id { get; set; }
         public int OrderNum { get; set; }
         public string Status { get; set; }
+
         public int UserId { get; set; }
         public Customer User { get; set; }
-        public ICollection<Product> OrderProducts { get; set; }
 
-        public Order()
-        {
-            OrderProducts = new List<Product>();
-        }
+        public List<Product> OrderProducts { get; set; } = new List<Product>();
     }
 }

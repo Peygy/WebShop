@@ -28,6 +28,7 @@ namespace WebShopApp
                 else
                 {
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine("Неверный Логин или Пароль, или Вы забанены!");
                     Console.WriteLine();
                     Console.ReadLine();

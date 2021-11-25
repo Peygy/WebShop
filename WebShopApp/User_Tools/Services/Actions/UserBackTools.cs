@@ -8,20 +8,17 @@ namespace WebShopApp
 {
     class UserBackTools // Класс инструментов для взаимодействия пользователя с магазином / Class of tools for user interaction with the store
     {
-        ModerFrontTools moderAct = new ModerFrontTools();
-
-
         public bool CategoriesOutput_Back(int categoryInput, ref Category category) // Вывод категорий для покупки товаров / Output categories for buying products
         {
             try
             {
                 using (UserDataContext data = new UserDataContext())
                 {
-                    var categories = data.Categories.Include(p => p.Products).ToList();
+                    var categories = data.Categories.Include(c => c.Products).ToList();
 
-                    if (categories.Any(p => p.Id == categories[categoryInput].Id))
+                    if (categories.Any(c => c.Id == categories[categoryInput].Id))
                     {
-                        category = categories.FirstOrDefault(p => p.Id == categories[categoryInput].Id);
+                        category = categories.FirstOrDefault(c => c.Id == categories[categoryInput].Id);
 
                         return true;
                     }
@@ -33,13 +30,15 @@ namespace WebShopApp
             }
             catch(Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
         }
 
-        public bool ProductOutput_Back(Product product, Customer user) // Вывод товаров для покупки / Output products to buy
+        public bool AddToBasket_Back(Product product, Customer user) // Добавление товаров в корзину / Adding products to basket
         {
             try
             {
@@ -53,7 +52,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -67,7 +68,7 @@ namespace WebShopApp
             {
                 using (UserDataContext data = new UserDataContext())
                 {
-                    if (!data.Orders.Any(p => p.OrderNum == orderNumber))
+                    if (!data.Orders.Any(o => o.OrderNum == orderNumber))
                     {
                         return true;
                     }
@@ -79,7 +80,9 @@ namespace WebShopApp
             }
             catch(Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -92,8 +95,9 @@ namespace WebShopApp
             {
                 using (UserDataContext data = new UserDataContext())
                 {
-                    Order order = new Order { OrderNum = orderNumber, User = user, Status = "На складе" };
+                    Order order = new Order { OrderNum = orderNumber, User = user, OrderProducts = user.Basket, Status = "На складе" };
                     data.Orders.Add(order);
+                    user.Orders.Add(order);
                     user.Basket.Clear();
                     data.SaveChanges();
 
@@ -102,7 +106,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -123,7 +129,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -135,11 +143,9 @@ namespace WebShopApp
             {
                 using (UserDataContext data = new UserDataContext())
                 {
-                    var userWithOrders = data.Users.Include(p => p.Order).Where(u => u.Order.User == user).ToList();
-
                     if(key == 0)
                     {
-                        if (userWithOrders.Count == 0)
+                        if (user.Orders.Count == 0)
                         {
                             return true;
                         }
@@ -151,9 +157,9 @@ namespace WebShopApp
 
                     if (key == 1)
                     {
-                        for (int i = 0; i < userWithOrders.Count; i++)
+                        for (int i = 0; i < user.Orders.Count; i++)
                         {
-                            Console.WriteLine($"{i + 1}. {userWithOrders[i].Order.OrderNum}");
+                            Console.WriteLine($"{i + 1}. {user.Orders[i].OrderNum}");
                         }
 
                         return true;
@@ -161,9 +167,9 @@ namespace WebShopApp
 
                     if (key == 2)
                     {
-                        if(OrderInput <= userWithOrders.Count && OrderInput > 0)
+                        if(OrderInput <= user.Orders.Count && OrderInput > 0)
                         {
-                            order = userWithOrders[OrderInput].Order;
+                            order = user.Orders[OrderInput];
 
                             return true;
                         }
@@ -185,7 +191,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -198,17 +206,14 @@ namespace WebShopApp
             {
                 using (UserDataContext data = new UserDataContext())
                 {
-                    var userOrders = data.Users.Include(p => p.Order).Where(u => u.Order.User == user).ToList();
-                    var userForRemove = data.Users.FirstOrDefault(u => u.Id == user.Id);
-
-                    for (int i = 0; i < userOrders.Count; i++)
+                    for (int i = 0; i < user.Orders.Count; i++)
                     {
-                        userOrders[i].Order.OrderProducts.Clear();
-                        data.Orders.Remove(userOrders[i].Order);
+                        data.Orders.Remove(user.Orders[i]);
                     }
 
-                    userForRemove.Basket.Clear();
-                    data.Users.Remove(userForRemove);
+                    user.Orders.Clear();
+                    user.Basket.Clear();
+                    data.Users.Remove(user);
                     data.SaveChanges();
 
                     return true;
@@ -216,7 +221,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;

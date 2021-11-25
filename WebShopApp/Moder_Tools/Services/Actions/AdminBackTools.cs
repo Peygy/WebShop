@@ -7,15 +7,13 @@ namespace WebShopApp
 {
     public class AdminBackTools // Класс инструментов(реализации) модерации для админов / Admin moderation tools(realization) class
     {
-        ModerBackTools moderAct = new ModerBackTools();
-      
         public bool AddNewCategory_Back(string categoryName) // Добавление новой категории / Adding new category
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (!data.Categories.Any(p => p.Name == categoryName))
+                    if (!data.Categories.Any(u => u.Name == categoryName))
                     {
                         Category category = new Category { Name = categoryName };
                         data.Categories.Add(category);
@@ -31,41 +29,15 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
         }
 
-        public bool EditCategory_Back(int categoryChoice, ref Category category) // Редактирование категории / Editing category
-        {
-            try
-            {
-                using (AdminDataContext data = new AdminDataContext())
-                {
-                    var categories = data.Categories.Include(p => p.Products).ToList();
-
-                    if (data.Categories.Any(p => p.Id == categories[categoryChoice].Id))
-                    {
-                        category = categories.FirstOrDefault(p => p.Id == categories[categoryChoice].Id);                                            
-
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            return false;
-        }
-
-        public bool RenameCategory_Back(string oldName, ref string newName) // Переименование категории / Renaming category
+        public bool RenameCategory_Back(string oldName, string newName) // Переименование категории / Renaming category
         {
             try
             {
@@ -74,9 +46,9 @@ namespace WebShopApp
                     string categoryNameOld = oldName;
                     string categoryNameNew = newName;
 
-                    if (!data.Categories.Any(p => p.Name == categoryNameNew))
+                    if (!data.Categories.Any(u => u.Name == categoryNameNew))
                     {
-                        data.Categories.Include(p => p.Products).FirstOrDefault(p => p.Name == categoryNameOld).Name = categoryNameNew;
+                        data.Categories.Include(c => c.Products).FirstOrDefault(c => c.Name == categoryNameOld).Name = categoryNameNew;
                         data.SaveChanges();
 
                         return true;
@@ -89,7 +61,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -115,7 +89,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -129,13 +105,13 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var categories = data.Categories.Include(p => p.Products).ToList();
+                    var categories = data.Categories.Include(c => c.Products).ToList();
 
                     if (key == 0)
                     {
-                        if (data.Categories.Any(p => p.Id == categories[categoryChoice].Id))
+                        if (data.Categories.Any(c => c.Id == categories[categoryChoice].Id))
                         {
-                            productCategoryName = data.Categories.FirstOrDefault(p => p.Id == categories[categoryChoice].Id).Name;
+                            productCategoryName = data.Categories.FirstOrDefault(c => c.Id == categories[categoryChoice].Id).Name;
 
                             return true;
                         }
@@ -146,7 +122,7 @@ namespace WebShopApp
                     }
                     else
                     {
-                        Category category = data.Categories.Include(p => p.Products).FirstOrDefault(с => с.Name == data.Categories.FirstOrDefault(p => p.Id == categories[categoryChoice].Id).Name);
+                        Category category = data.Categories.Include(c => c.Products).FirstOrDefault(с => с.Name == data.Categories.FirstOrDefault(c => c.Id == categories[categoryChoice].Id).Name);
                         Product newProduct = new Product { Name = productName, ProductCategory = category, Price = productPrice };
 
                         data.Warehouse.Add(newProduct);
@@ -159,7 +135,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -171,21 +149,29 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {                   
-                    product = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == choice);
-                    product.ProductInfo();
+                    if (data.Warehouse.Any(p => p.Id == choice))
+                    {
+                        product = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == choice);                        
 
-                    return true;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
         }
 
-        public bool EditProductRename_Back(string oldName, ref string newName) // Переименование товара / Renaming product
+        public bool EditProductRename_Back(string oldName, string newName) // Переименование товара / Renaming product
         {
             try
             {
@@ -209,7 +195,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -221,12 +209,12 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var categories = data.Categories.Include(p => p.Products).ToList();
+                    var categories = data.Categories.Include(c => c.Products).ToList();
 
-                    if (data.Categories.Any(p => p.Id == categories[newCategId].Id))
+                    if (data.Categories.Any(c => c.Id == categories[newCategId].Id))
                     {
-                        category = data.Categories.Include(c => c.Products).FirstOrDefault(p => p.Id == categories[newCategId].Id);
-                        data.Warehouse.Include(c => c.ProductCategory).FirstOrDefault(p => p.ProductCategory.Name == productCategOld).ProductCategory = category;
+                        category = data.Categories.Include(c => c.Products).FirstOrDefault(c => c.Id == categories[newCategId].Id);
+                        data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.ProductCategory.Name == productCategOld).ProductCategory = category;
                         data.SaveChanges();
 
                         return true;
@@ -239,7 +227,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -259,7 +249,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -278,6 +270,7 @@ namespace WebShopApp
                     {
                         deletedProduct = products[productChoice];
                         Category category = deletedProduct.ProductCategory;
+
                         category.Products.Remove(deletedProduct);
                         data.Warehouse.Remove(deletedProduct);
                         data.SaveChanges();
@@ -292,7 +285,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -306,15 +301,25 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Include(p => p.OrderProducts).Include(p => p.User).ToList();
-                    order = orders[orderNumber];
+                    var orders = data.Orders.Include(o => o.OrderProducts).Include(o => o.User).ToList();
 
-                    return data.Orders.Any(p => p.Id == orders[orderNumber].Id);
+                    if(data.Orders.Any(o => o.Id == orders[orderNumber].Id))
+                    {
+                        order = orders[orderNumber];
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }   
                 }
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -326,12 +331,13 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Include(p => p.OrderProducts).Include(p => p.User).ToList();
+                    var orders = data.Orders.Include(o => o.OrderProducts).Include(o => o.User).ToList();
 
-                    if (data.Orders.Any(p => p.Id == orders[orderId].Id))
+                    if (data.Orders.Any(o => o.Id == orders[orderId].Id))
                     {
                         order = orders[orderId];
-                        data.Orders.Remove(data.Orders.FirstOrDefault(p => p.Id == orders[orderId].Id));
+                        order.User.Orders.Remove(order);
+                        data.Orders.Remove(order);
                         data.SaveChanges();                        
 
                         return true;
@@ -344,7 +350,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -358,19 +366,18 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var customers = data.Users.Include(p => p.Basket).ToList();
+                    var customers = data.Users.Include(u => u.Basket).Include(u => u.Orders).ToList();
 
-                    if (data.Users.Any(p => p.Id == customers[userId].Id))
+                    if (data.Users.Any(u => u.Id == customers[userId].Id))
                     {
-                        var userOrders = data.Users.Include(p => p.Basket).Include(p => p.Order).Where(u => u.Order.User == customers[userId]).ToList();
-                        customer = data.Users.Include(p => p.Basket).Include(p => p.Order).FirstOrDefault(u => u.Id == customers[userId].Id);
+                        customer = data.Users.Include(u => u.Basket).Include(u => u.Orders).FirstOrDefault(u => u.Id == customers[userId].Id);
 
-                        for (int i = 0; i < userOrders.Count; i++)
+                        for (int i = 0; i < customer.Orders.Count; i++)
                         {
-                            userOrders[i].Order.OrderProducts.Clear();
-                            data.Orders.Remove(userOrders[i].Order);
+                            data.Orders.Remove(customer.Orders[i]);
                         }
 
+                        customer.Orders.Clear();
                         customer.Basket.Clear();
                         data.Users.Remove(customer);
                         data.SaveChanges();
@@ -385,7 +392,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -399,7 +408,7 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (!data.Moders.Any(p => p.Login == moderLogin))
+                    if (!data.Moders.Any(m => m.Login == moderLogin))
                     {
                         if(key == 0)
                         {
@@ -422,7 +431,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -434,12 +445,12 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var moders = data.Moders.Where(p => p.Login != "Peygy").ToList();
+                    var moders = data.Moders.Where(m => m.Login != "Peygy").ToList();
 
-                    if (data.Moders.Any(p => p.Id == moders[moderId].Id))
+                    if (data.Moders.Any(m => m.Id == moders[moderId].Id))
                     {
                         moder = moders[moderId];
-                        data.Moders.Remove(data.Moders.FirstOrDefault(p => p.Id == moders[moderId].Id));
+                        data.Moders.Remove(data.Moders.FirstOrDefault(m => m.Id == moders[moderId].Id));
                         data.SaveChanges();
 
                         return true;
@@ -452,7 +463,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -466,7 +479,7 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (!data.Moders.Any(p => p.Login == adminLogin))
+                    if (!data.Moders.Any(m => m.Login == adminLogin))
                     {
                         if (key == 0)
                         {
@@ -489,19 +502,21 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
         }
 
-        public bool ViewAllModers_Back() // Посмотреть всех модераторов
+        public bool ViewAllModers_Back() // Посмотреть всех модераторов / View all moderators
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var moderators = data.Moders.Where(p => p.Login != "Peygy").ToList();
+                    var moderators = data.Moders.Where(m => m.Login != "Peygy").ToList();
 
                     for (int i = 0; i < moderators.Count; i++)
                     {
@@ -513,7 +528,9 @@ namespace WebShopApp
             }
             catch(Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;

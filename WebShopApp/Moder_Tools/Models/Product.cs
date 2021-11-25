@@ -8,9 +8,11 @@ namespace WebShopApp
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int Price { get; set; }
+        public int Price { get; set; }       
         public Category ProductCategory { get; set; }
-        public Order Order { get; set; }
+
+        public List<Customer> Customers { get; set; } = new List<Customer>();
+        public List<Order> Orders { get; set; } = new List<Order>();
 
         public void ProductInfo() // Информация товара / Product information
         {

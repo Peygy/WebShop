@@ -80,53 +80,7 @@ namespace WebShopApp
 
         public void EditCategory() // Редактировать категорию / Edit category
         {
-            var products = new List<Product>();
-            bool exit = false;
-
-            while (!exit)
-            {
-                moderAct.ViewAllCategories();
-
-                Console.WriteLine();
-                Console.Write("Категория для редактирования: ");
-                string choice = Console.ReadLine();
-                Console.Clear();
-
-                int.TryParse(choice, out int categoryChoice);
-                categoryChoice -= 1;
-
-                if (choice == "menu")
-                {
-                    return;
-                }
-
-                if (adminAct.EditCategory_Back(categoryChoice, ref category))
-                {
-                    Console.WriteLine($"Категория '{category.Name}':");
-                    Console.WriteLine();
-
-                    foreach (Product productLocal in category.Products)
-                    {
-                        products.Add(productLocal);
-                    }
-
-                    for (int i = 0; i < category.Products.Count; i++)
-                    {
-                        Console.WriteLine($"{i + 1}. {products[i].Name} =>  Цена: {products[i].Price}");
-                    }
-
-                    exit = true;
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine();
-                    Console.WriteLine("Такой категории нет");
-                    Console.ReadLine();
-                    Console.Clear();
-                }
-            }
-
+            moderAct.EditCategory(ref category);
 
             Console.WriteLine();
             Console.WriteLine("1. Добавить товар");
@@ -139,13 +93,13 @@ namespace WebShopApp
                 case "1":
                     {
                         Console.Clear();
-                        moderAct.AddProduct(category);
+                        moderAct.AddProduct(category); // Из инструментов модератора / From moderator tools
                         break;
                     }
                 case "2":
                     {
                         Console.Clear();
-                        moderAct.RemoveProduct(category);
+                        moderAct.RemoveProduct(category); // Из инструментов модератора / From moderator tools
                         break;
                     }
                 case "3":
@@ -186,7 +140,7 @@ namespace WebShopApp
                     return;
                 }
 
-                if (adminAct.RenameCategory_Back(categoryNameOld, ref categoryNameNew))
+                if (adminAct.RenameCategory_Back(categoryNameOld, categoryNameNew))
                 {
                     exit = true;
                 }
@@ -334,57 +288,66 @@ namespace WebShopApp
         public void EditProduct() // Редактировать товар / Edit product
         {
             bool exit = false;
-            moderAct.ViewAllProducts();
-
-            Console.WriteLine();
-            Console.Write("Выберите товар для редактирования: ");
-            string editProduct = Console.ReadLine();
-            int.TryParse(editProduct, out int choice);
-
-            if (editProduct == "menu")
-            {
-                return;
-            }
 
             while (!exit)
             {
                 Console.Clear();
+                moderAct.ViewAllProducts();
 
-                if(!adminAct.EditProduct_Back(choice, ref product))
+                Console.WriteLine();
+                Console.Write("Выберите товар для редактирования: ");
+                string editProduct = Console.ReadLine();
+                int.TryParse(editProduct, out int choice);
+
+                if (editProduct == "menu")
                 {
                     return;
                 }
 
-                Console.WriteLine("1. Изменить название товара");
-                Console.WriteLine("2. Изменить категорию товара");
-                Console.WriteLine("3. Изменить стоимость товара");
-
-                switch (Console.ReadLine())
+                if (adminAct.EditProduct_Back(choice, ref product))
                 {
-                    case "1":
-                        {
-                            Console.Clear();
-                            EditProductRename(product);
-                            break;
-                        }
-                    case "2":
-                        {
-                            Console.Clear();
-                            EditProductCategory(product);
-                            break;
-                        }
-                    case "3":
-                        {
-                            Console.Clear();
-                            EditProductPrice(product);
-                            break;
-                        }
-                    case "menu":
-                        {
-                            exit = true;
-                            break;
-                        }
+                    product.ProductInfo();
+                    exit = true;
                 }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine();
+                    Console.WriteLine("Такого товара не существует!");
+                    Console.ReadLine();
+                    Console.Clear();
+                }       
+            }
+
+
+            Console.WriteLine("1. Изменить название товара");
+            Console.WriteLine("2. Изменить категорию товара");
+            Console.WriteLine("3. Изменить стоимость товара");
+
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    {
+                        Console.Clear();
+                        EditProductRename(product);
+                        break;
+                    }
+                case "2":
+                    {
+                        Console.Clear();
+                        EditProductCategory(product);
+                        break;
+                    }
+                case "3":
+                    {
+                        Console.Clear();
+                        EditProductPrice(product);
+                        break;
+                    }
+                case "menu":
+                    {
+                        break;
+                    }
             }
         }
 
@@ -408,7 +371,7 @@ namespace WebShopApp
                     return;
                 }
 
-                if (adminAct.EditProductRename_Back(productNameOld, ref productNameNew))
+                if (adminAct.EditProductRename_Back(productNameOld, productNameNew))
                 {
                     exit = true;
                 }
@@ -594,48 +557,48 @@ namespace WebShopApp
 
         public void OrdersView() // Просмотр заказа / View order
         {
-            var products = new List<Product>();
+            bool exit = false;
 
-            moderAct.ViewAllOrders();
-
-            Console.WriteLine();
-            Console.Write("Введите заказ для просмотра: ");
-            string orderForView = Console.ReadLine();
-            int.TryParse(orderForView, out int orderNumber);
-            orderNumber -= 1;
-
-            if (orderForView == "menu")
+            while(!exit)
             {
-                return;
-            }
+                moderAct.ViewAllOrders();
 
-            if (adminAct.OrdersView_Back(orderNumber, ref order))
-            {
-                Console.WriteLine($"Номер заказа: {order.OrderNum}");
-                Console.WriteLine($"Пользователь: {order.User}");
-                Console.WriteLine($"Статус: {order.Status}");
                 Console.WriteLine();
-                Console.WriteLine("В заказе:");
+                Console.Write("Введите заказ для просмотра: ");
+                string orderForView = Console.ReadLine();
+                int.TryParse(orderForView, out int orderNumber);
+                orderNumber -= 1;
 
-                foreach(Product product in order.OrderProducts)
+                if (orderForView == "menu")
                 {
-                    products.Add(product);
+                    return;
                 }
 
-                for (int i = 0; i < products.Count; i++)
+                if (adminAct.OrdersView_Back(orderNumber, ref order))
                 {
-                    Console.WriteLine($"Название: {products[i].Name} => Цена: {products[i].Price} рублей");
+                    Console.WriteLine($"Номер заказа: {order.OrderNum}");
+                    Console.WriteLine($"Пользователь: {order.User}");
+                    Console.WriteLine($"Статус: {order.Status}");
+                    Console.WriteLine();
+                    Console.WriteLine("В заказе:");
+
+                    for (int i = 0; i < order.OrderProducts.Count; i++)
+                    {
+                        Console.WriteLine($"Название: {order.OrderProducts[i].Name} => Цена: {order.OrderProducts[i].Price} рублей");
+                    }
+                    Console.ReadLine();
+
+                    exit = true;
                 }
-                Console.ReadLine();
-            }
-            else
-            {
-                Console.Clear();
-                Console.WriteLine();
-                Console.WriteLine("Такого заказа не существует!");
-                Console.ReadLine();
-                Console.Clear();
-            }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine();
+                    Console.WriteLine("Такого заказа не существует!");
+                    Console.ReadLine();
+                    Console.Clear();
+                }
+            }           
         }
 
         public void OrderRemove() // Удалить заказ / Remove order

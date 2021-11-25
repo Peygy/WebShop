@@ -14,7 +14,7 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var categories = data.Categories.Include(p => p.Products).ToList();
+                    var categories = data.Categories.Include(c => c.Products).ToList();
 
                     foreach (Category category in categories)
                     {
@@ -26,7 +26,9 @@ namespace WebShopApp
             }
             catch(Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -52,7 +54,9 @@ namespace WebShopApp
             }
             catch (Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -64,7 +68,7 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Include(p => p.User).ToList();
+                    var orders = data.Orders.Include(o => o.User).ToList();
 
                     for (int i = 0; i < orders.Count; i++)
                     {
@@ -76,7 +80,9 @@ namespace WebShopApp
             }
             catch (Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
@@ -88,13 +94,11 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var customers = data.Users.Include(p => p.Basket).ToList();
+                    var customers = data.Users.Include(u => u.Basket).Include(u => u.Orders).ToList();
 
                     for (int i = 0; i < customers.Count; i++)
                     {
-                        var orders = data.Orders.Where(p => p.User == customers[i]).ToList();
-
-                        Console.WriteLine($"{i + 1}. {customers[i].Login} => Кол-во заказов: {orders.Count}, Кол-во товаров в корзине: {customers[i].Basket.Count}");
+                        Console.WriteLine($"{i + 1}. {customers[i].Login} => Кол-во заказов: {customers[i].Orders.Count}, Кол-во товаров в корзине: {customers[i].Basket.Count}");
                     }
 
                     return true;
@@ -102,7 +106,9 @@ namespace WebShopApp
             }
             catch (Exception ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }            
 
             return false;
@@ -116,11 +122,11 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var categories = data.Categories.Include(p => p.Products).ToList();
+                    var categories = data.Categories.Include(c => c.Products).ToList();
 
-                    if (data.Categories.Any(p => p.Id == categories[categoryChoice].Id))
+                    if (data.Categories.Any(c => c.Id == categories[categoryChoice].Id))
                     {
-                        category = data.Categories.Include(p => p.Products).FirstOrDefault(c => c.Id == categories[categoryChoice].Id);
+                        category = data.Categories.Include(c => c.Products).FirstOrDefault(c => c.Id == categories[categoryChoice].Id);
 
                         return true;
                     }
@@ -132,13 +138,15 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
         }
 
-        public bool AddProduct_Back(int choice, ref Product addedProduct, Category category, int key) // Добавление товара / Adding product
+        public bool AddProduct_Back(int choice, ref Product addedProduct, int key) // Добавление товара / Adding product
         {
             try
             {
@@ -159,9 +167,8 @@ namespace WebShopApp
                     {
                         if (data.Warehouse.Any(p => p.Name == products[choice].Name))
                         {
-                            addedProduct = data.Warehouse.Include(u => u.ProductCategory).FirstOrDefault(p => p.Id == products[choice].Id);
-                            addedProduct.ProductCategory = category;
-                            category.Products.Add(addedProduct);
+                            addedProduct = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == products[choice].Id);
+                            addedProduct.ProductCategory.Products.Add(addedProduct);
                             data.SaveChanges();
 
                             return true;
@@ -175,29 +182,24 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
         }
 
-        public bool RemoveProduct_Back(int choice, Category category) // Удаление товара / Removing product
+        public bool RemoveProduct_Back(int choice, ref Product product,  Category category) // Удаление товара / Removing product
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var products = new List<Product>();
-
-                    foreach(Product product in category.Products)
+                    if (data.Warehouse.Any(p => p.Name == category.Products[choice].Name))
                     {
-                        products.Add(product);
-                    }
-
-                    if (data.Warehouse.Any(p => p.Name == products[choice].Name))
-                    {
-                        Product product = data.Warehouse.Include(u => u.ProductCategory).FirstOrDefault(p => p.Id == choice);
-                        products[choice].ProductCategory = null;
+                        product = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == choice);
+                        product.ProductCategory = null;
                         category.Products.Remove(product);
                         data.SaveChanges();
 
@@ -211,7 +213,9 @@ namespace WebShopApp
             }
             catch (DbUpdateException ex)
             {
+                Console.Clear();
                 Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
 
             return false;
