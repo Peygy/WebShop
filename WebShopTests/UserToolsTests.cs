@@ -6,7 +6,7 @@ using WebShopApp;
 namespace WebShopTests
 {
     [TestFixture]
-    class UserToolsTests
+    class UserToolsTests // Тестирование инструментов для взаимодействия пользователя с магазином / Testing tools for user interaction with the store
     {
         private bool checking;
 
@@ -23,14 +23,9 @@ namespace WebShopTests
         [SetUp]
         public void Setup() // Настройка тестов / Test setup
         {
-            using (TestDataContext data = new TestDataContext())
-            {
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
             testName = "test";
             testNumber = 0;
+            testNameForOrder = 000000;
         }
 
 
@@ -80,7 +75,7 @@ namespace WebShopTests
 
 
         [Test]
-        public void CategoriesOutput_Check()
+        public void CategoriesOutput_Check() // Тест вывода категорий для покупки товаров /
         {
             checking = false;
             Create_Test_Category();
@@ -107,8 +102,9 @@ namespace WebShopTests
             Assert.AreEqual(true, checking);
         }
 
+
         [Test]
-        public void AddToBaskett_Check()
+        public void AddToBasket_Check() // Тест добавления товаров в корзину /
         {
             checking = false;
             Create_Test_Product();
@@ -117,6 +113,136 @@ namespace WebShopTests
             using (TestDataContext data = new TestDataContext())
             {
                 testCustomer.Basket.Add(testProduct);
+                data.SaveChanges();
+
+                checking = true;
+
+                data.RemoveRange(data);
+                data.SaveChanges();
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+        [Test]
+        public void UserBasket_Check() // Тест действий с корзиной /
+        {
+            checking = false;
+
+            using (TestDataContext data = new TestDataContext())
+            {
+                if (!data.Orders.Any(o => o.OrderNum == testNameForOrder))
+                {
+                    checking = true;
+                }
+                else
+                {
+                    checking = false;
+                }
+
+                data.RemoveRange(data);
+                data.SaveChanges();
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void RegistrationOrder_Check() // Тест оформления заказа /
+        {
+            checking = false;
+            Create_Test_Customer();
+
+            using (TestDataContext data = new TestDataContext())
+            {
+                Order order = new Order { OrderNum = testNameForOrder, User = testCustomer, OrderProducts = testCustomer.Basket, Status = "На складе" };
+                data.Orders.Add(order);
+                testCustomer.Orders.Add(order);
+                testCustomer.Basket.Clear();
+                data.SaveChanges();
+
+                checking = true;
+
+                data.RemoveRange(data);
+                data.SaveChanges();
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void ProductRemoveFromBasket_Check() 
+        {
+            checking = false;
+            Create_Test_Product();
+
+            using (TestDataContext data = new TestDataContext())
+            {
+                Product product = data.Warehouse.FirstOrDefault(p => p.Id == testNumber);
+                testCustomer.Basket.Remove(product);
+                data.SaveChanges();
+
+                checking = true;
+
+                data.RemoveRange(data);
+                data.SaveChanges();
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void OrdersInfo_Check()
+        {
+            checking = false;
+            Create_Test_Customer();
+            Create_Test_Order();
+
+            using (TestDataContext data = new TestDataContext())
+            {
+                for (int i = 0; i < testCustomer.Orders.Count; i++)
+                {
+                    checking = true;
+                }
+
+                if (testNumber <= testCustomer.Orders.Count)
+                {
+                    testOrder = testCustomer.Orders[testNumber];
+
+                    checking = true;
+                }
+                else
+                {
+                    checking = false;
+                }
+
+                data.RemoveRange(data);
+                data.SaveChanges();
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void AccountRemove_Check()
+        {
+            checking = false;
+            Create_Test_Customer();
+
+            using (TestDataContext data = new TestDataContext())
+            {
+                for (int i = 0; i < testCustomer.Orders.Count; i++)
+                {
+                    data.Orders.Remove(testCustomer.Orders[i]);
+                }
+
+                testCustomer.Orders.Clear();
+                testCustomer.Basket.Clear();
+                data.Users.Remove(testCustomer);
                 data.SaveChanges();
 
                 checking = true;

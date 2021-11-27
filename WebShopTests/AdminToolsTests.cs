@@ -25,12 +25,6 @@ namespace WebShopTests
         [SetUp]
         public void Setup() // Настройка тестов / Test setup
         {
-            using (TestDataContext data = new TestDataContext())
-            {
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
             checking = false;
             testName = "test";
             testNameNew = "newTest";
@@ -113,8 +107,8 @@ namespace WebShopTests
                     checking = false;
                 }
 
-                data.RemoveRange(data);
                 data.SaveChanges();
+                data.Categories.RemoveRange(data.Categories);
             }
 
             Assert.AreEqual(true, checking);
@@ -140,8 +134,8 @@ namespace WebShopTests
                     checking = false;
                 }
 
-                data.RemoveRange(data);
                 data.SaveChanges();
+                data.Categories.RemoveRange(data.Categories);
             }
 
             Assert.AreEqual(true, checking);
@@ -161,8 +155,9 @@ namespace WebShopTests
                 }
 
                 testCategory.Products.Clear();
-                data.RemoveRange(data);
+                data.Categories.RemoveRange(data.Categories);
                 data.SaveChanges();
+
                 checking = true;
             }
 
@@ -183,9 +178,10 @@ namespace WebShopTests
                 if (data.Categories.Any(c => c.Id == categories[testNumber].Id))
                 {
                     string nullName = data.Categories.FirstOrDefault(c => c.Id == categories[testNumber].Id).Name;
-                }                
+                }
 
-                data.RemoveRange(data);
+                data.Warehouse.RemoveRange(data.Warehouse);
+                data.Categories.RemoveRange(data.Categories);
                 data.SaveChanges();
                 checking = true;
             }

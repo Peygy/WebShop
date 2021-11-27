@@ -122,6 +122,7 @@ namespace WebShopApp
             if (user.Basket.Count == 0)
             {
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine("Ваша корзина пуста!");
                 Console.ReadLine();
 
@@ -172,6 +173,7 @@ namespace WebShopApp
             if (user.Basket.Count == 0)
             {
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine("Ваша корзина пуста!");
                 Console.ReadLine();
                 return;
@@ -318,6 +320,7 @@ namespace WebShopApp
                 if(userAct.AccountRemove_Back(user))
                 {
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine("Ваш аккаунт удален!");
                     Console.ReadLine();
                 }

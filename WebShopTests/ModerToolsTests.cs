@@ -23,14 +23,9 @@ namespace WebShopTests
         [SetUp]
         public void Setup() // Настройка тестов / Test setup
         {
-            using (TestDataContext data = new TestDataContext())
-            {
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-           
             testName = "test";
             testNumber = 0;
+            testNameForOrder = 000000;
         }
 
 

@@ -15,7 +15,7 @@ namespace WebShopApp
 
         public TestDataContext()
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 

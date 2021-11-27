@@ -276,6 +276,11 @@ namespace WebShopApp
                 if (Console.ReadLine() == "1")
                 {
                     adminAct.AddNewProduct_Back(categoryChoice, productName, ref productCategoryName, productPrice, 1);
+
+                    Console.Clear();
+                    Console.WriteLine($"Товар '{productName}' добавлен");
+                    Console.ReadLine();
+
                     exit = true;
                 }
                 else
@@ -643,7 +648,7 @@ namespace WebShopApp
 
         public void UsersSetUp() // Настройка пользователей / Setting up users
         {
-            moderAct.ViewAllOrders();
+            moderAct.ViewAllUsers();
 
             Console.WriteLine();
             Console.WriteLine("1. Удалить пользователя");

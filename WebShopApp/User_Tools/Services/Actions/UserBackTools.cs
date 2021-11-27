@@ -114,7 +114,7 @@ namespace WebShopApp
             return false;
         }
 
-        public bool ProductRemoveFromBasket_Back(Customer user, int prodNum) // Удаление товара / Product removing
+        public bool ProductRemoveFromBasket_Back(Customer user, int prodNum) // Удаление товара из / Product removing
         {
             try
             {
