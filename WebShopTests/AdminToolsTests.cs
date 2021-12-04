@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using System.Linq;
 using WebShopApp;
 
 namespace WebShopTests
 {
+    /*
     [TestFixture]
     class AdminToolsTests // Тестирование инструментов(реализации) модерации для админов / Testing tools (implementation) of moderation for admins
     {
@@ -199,7 +199,8 @@ namespace WebShopTests
             {
                 if (data.Warehouse.Any(p => p.Id == testNumber))
                 {
-                    testProduct = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == testNumber);
+                    testProduct = data.Warehouse.Include(p => p.ProductCategory)
+                        .FirstOrDefault(p => p.Id == testNumber);
 
                     checking = true;
                 }
@@ -526,4 +527,5 @@ namespace WebShopTests
             Assert.AreEqual(true, checking);
         }
     }
+    */
 }

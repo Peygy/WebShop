@@ -10,7 +10,7 @@ namespace WebShopApp
         public int OrderNum { get; set; }
         public string Status { get; set; }
 
-        public int UserId { get; set; }
+        public int UserId { get; set; } // А нужно ли (внизу же тоже самое)? мб удалить)
         public Customer User { get; set; }
 
         public List<Product> OrderProducts { get; set; } = new List<Product>();

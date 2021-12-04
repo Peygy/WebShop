@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using System.Linq;
 using WebShopApp;
 
 namespace WebShopTests
 {
+    /*
     [TestFixture]
     class ModerToolsTests // Тестирование инструментов(реализации) модерации / Testing Moderation Tools (Implementation)
     {
@@ -253,4 +253,5 @@ namespace WebShopTests
             Assert.AreEqual(true, checking);
         }
     }
+    */
 }

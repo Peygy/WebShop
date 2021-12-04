@@ -7,53 +7,23 @@ namespace WebShopApp
     class ModerFrontTools // Класс управления модерации / Moderation control class
     {
         ModerBackTools moderAct = new ModerBackTools();
+        OutputModelsFront output = new OutputModelsFront();
 
         Category category;
-        Product product;
-
-        public void ViewAllCategories() // Посмотреть все категории / View all categories
-        {
-            Console.WriteLine("Все категории:");
-            Console.WriteLine();
-            moderAct.ViewAllCategories_Back();
-        }
-
-        public void ViewAllProducts() // Посмотреть все товары / View all products
-        {
-            Console.WriteLine("Все товары:");
-            Console.WriteLine();
-            moderAct.ViewAllProducts_Back();
-        }
-
-        public void ViewAllOrders() // Посмотреть все заказы / View all orders
-        {
-            Console.WriteLine("Все заказы:");
-            Console.WriteLine();
-            moderAct.ViewAllOrders_Back();
-        }
-
-        public void ViewAllUsers() // Посмотреть всех пользователей / View all users
-        {
-            Console.WriteLine("Все пользователи:");
-            Console.WriteLine();
-            moderAct.ViewAllUsers_Back();
-        }
+        Product product;       
 
 
-
-        public void EditCategory(ref Category CategoryForEdit) // Редактировать категорию / Edit category
+        public void EditCategory(ref Category category) // Редактировать категорию / Edit category
         {
             bool exit = false;
 
             while (!exit)
             {
-                ViewAllCategories();
+                output.ViewAllCategories();
 
-                Console.WriteLine();
+
                 Console.Write("Категория для редактирования: ");
-                string choice = Console.ReadLine();
-                Console.Clear();
-
+                string choice = Console.ReadLine();                
                 int.TryParse(choice, out int categoryChoice);
                 categoryChoice -= 1;
 
@@ -64,13 +34,15 @@ namespace WebShopApp
 
                 if (moderAct.EditCategory_Back(categoryChoice, ref category)) // Из инструментов модератора / From moderator tools
                 {
-                    CategoryForEdit = category;
+                    Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine($"Категория '{category.Name}':");
                     Console.WriteLine();
 
                     for (int i = 0; i < category.Products.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} =>  Цена: {category.Products[i].Price}");
+                        Console.WriteLine($"{i + 1}. {category.Products[i].Name} => " +
+                            $"Цена: {category.Products[i].Price} ₽");
                     }
 
                     exit = true;
@@ -91,6 +63,7 @@ namespace WebShopApp
             EditCategory(ref category);
 
             Console.WriteLine();
+            Console.WriteLine();
             Console.WriteLine("1. Добавить товар");
             Console.WriteLine("2. Удалить товар");
 
@@ -99,13 +72,13 @@ namespace WebShopApp
                 case "1":
                     {
                         Console.Clear();
-                        AddProduct(category);
+                        AddProductIntoCategory(category);
                         break;
                     }
                 case "2":
                     {
                         Console.Clear();
-                        RemoveProduct(category);
+                        RemoveProductFromCategory(category);
                         break;
                     }
                 case "menu":
@@ -115,17 +88,19 @@ namespace WebShopApp
             }
         }
 
-        public void AddProduct(Category category) // Добавить продукт в категорию / Add product to category
+        public void AddProductIntoCategory(Category category) // Добавить продукт в категорию / Add product into category
         {
             bool exit = false;
 
             while(!exit)
             {
+                Console.WriteLine();
                 Console.WriteLine($"Доступные товары для добавления в категорию '{category.Name}' :");
                 Console.WriteLine();
 
-                moderAct.AddProduct_Back(0, ref product, 0);
+                moderAct.AddProductIntoCategory_Back(0, category, ref product, 0);
 
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.Write("Введите товар для добавления: ");
                 string addChoice = Console.ReadLine();
@@ -137,9 +112,10 @@ namespace WebShopApp
                     return;
                 }
 
-                if (moderAct.AddProduct_Back(choice, ref product, 1))
+                if (moderAct.AddProductIntoCategory_Back(choice, category, ref product, 1))
                 {
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine($"Товар {product.Name} добавлен в '{category.Name}'");
                     Console.ReadLine();
                     exit = true;
@@ -147,26 +123,30 @@ namespace WebShopApp
                 else
                 {
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine("Такого товара нет");
                     Console.ReadLine();
                 }
             }
         }
 
-        public void RemoveProduct(Category category) // Удалить товар из категории / Remove product from category
+        public void RemoveProductFromCategory(Category category) // Удалить товар из категории / Remove product from category
         {
             bool exit = false;
 
             while(!exit)
             {
+                Console.WriteLine();
                 Console.WriteLine($"Категория '{category.Name}':");
                 Console.WriteLine();
 
                 for (int i = 0; i < category.Products.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Цена: {category.Products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => " +
+                        $"Цена: {category.Products[i].Price} ₽");
                 }
 
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.Write("Введите товар для удаления: ");
                 string removeChoice = Console.ReadLine();
@@ -178,9 +158,10 @@ namespace WebShopApp
                     return;
                 }
 
-                if (moderAct.RemoveProduct_Back(choice, ref product, category))
+                if (moderAct.RemoveProductFromCategory_Back(choice, ref product, category))
                 {
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine($"Товар {product.Name} удален из '{category.Name}'");
                     Console.ReadLine();
                     exit = true;
@@ -188,6 +169,7 @@ namespace WebShopApp
                 else
                 {
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine("Такого товара нет");
                     Console.ReadLine();
                 }

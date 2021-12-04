@@ -7,126 +7,21 @@ using Microsoft.EntityFrameworkCore;
 namespace WebShopApp
 {
     class ModerBackTools // Класс инструментов(реализации) модерации / Moderation tool(realization) class
-    {
-        public bool ViewAllCategories_Back() // Вывод всех категорий / Output all categories
-        {
-            try
-            {
-                using (AdminDataContext data = new AdminDataContext())
-                {
-                    var categories = data.Categories.Include(c => c.Products).ToList();
-
-                    foreach (Category category in categories)
-                    {
-                        Console.WriteLine($"{category.Id}. {category.Name}");
-                    }
-
-                    return true;
-                }
-            }
-            catch(Exception ex)
-            {
-                Console.Clear();
-                Console.WriteLine(ex.Message);
-                Console.ReadLine();
-            }
-
-            return false;
-        }
-
-        public bool ViewAllProducts_Back() // Вывод всех продутков / Output all products
-        {
-            try
-            {
-                using (AdminDataContext data = new AdminDataContext())
-                {
-                    var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
-
-                    for (int i = 0; i < products.Count; i++)
-                    {
-                        string category = products[i].ProductCategory == null ? "Пусто" : $"{products[i].ProductCategory.Name}";
-
-                        Console.WriteLine($"{i + 1}. {products[i].Name} => Категория: {category}, Цена: {products[i].Price} рублей");
-                    }
-
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Clear();
-                Console.WriteLine(ex.Message);
-                Console.ReadLine();
-            }
-
-            return false;
-        }
-
-        public bool ViewAllOrders_Back() // Вывод всех заказов / Output all orders
-        {
-            try
-            {
-                using (AdminDataContext data = new AdminDataContext())
-                {
-                    var orders = data.Orders.Include(o => o.User).ToList();
-
-                    for (int i = 0; i < orders.Count; i++)
-                    {
-                        Console.WriteLine($"{i + 1}. {orders[i].OrderNum} => Пользователь: {orders[i].User.Login}, Статус: {orders[i].Status}");
-                    }
-
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Clear();
-                Console.WriteLine(ex.Message);
-                Console.ReadLine();
-            }
-
-            return false;
-        }
-
-        public bool ViewAllUsers_Back() // Вывод всех пользователей / Output all users
-        {
-            try
-            {
-                using (AdminDataContext data = new AdminDataContext())
-                {
-                    var customers = data.Users.Include(u => u.Basket).Include(u => u.Orders).ToList();
-
-                    for (int i = 0; i < customers.Count; i++)
-                    {
-                        Console.WriteLine($"{i + 1}. {customers[i].Login} => Кол-во заказов: {customers[i].Orders.Count}, Кол-во товаров в корзине: {customers[i].Basket.Count}");
-                    }
-
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Clear();
-                Console.WriteLine(ex.Message);
-                Console.ReadLine();
-            }            
-
-            return false;
-        }
-
-
-
+    {     
         public bool EditCategory_Back(int categoryChoice, ref Category category) // Редактирование категории / Editing category
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var categories = data.Categories.Include(c => c.Products).ToList();
+                    var categories = data.Categories
+                        .Include(c => c.Products).ToList();
 
-                    if (data.Categories.Any(c => c.Id == categories[categoryChoice].Id))
+                    if (data.Categories.Any(c => c == categories[categoryChoice]))
                     {
-                        category = data.Categories.Include(c => c.Products).FirstOrDefault(c => c.Id == categories[categoryChoice].Id);
+                        category = data.Categories
+                            .Include(c => c.Products)
+                            .FirstOrDefault(c => c == categories[categoryChoice]);
 
                         return true;
                     }
@@ -146,15 +41,16 @@ namespace WebShopApp
             return false;
         }
 
-        public bool AddProduct_Back(int choice, ref Product addedProduct, int key) // Добавление товара / Adding product
+        public bool AddProductIntoCategory_Back(int choice, Category category, ref Product product, int key) // Добавление товара в категорию / Adding product into category
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var products = data.Warehouse.Where(p => p.ProductCategory == null).ToList();
+                    var products = data.Warehouse
+                        .Where(p => p.ProductCategory == null).ToList();
 
-                    if(key == 0)
+                    if(key == 0) // Output 'products' without category
                     {
                         for (int i = 0; i < products.Count; i++)
                         {
@@ -163,12 +59,19 @@ namespace WebShopApp
 
                         return true;
                     }
-                    else
+                    else // Adding 'product' to category
                     {
-                        if (data.Warehouse.Any(p => p.Name == products[choice].Name))
+                        if (data.Warehouse.Any(p => p == products[choice]))
                         {
-                            addedProduct = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == products[choice].Id);
-                            addedProduct.ProductCategory.Products.Add(addedProduct);
+                            category = data.Categories
+                                .Include(c => c.Products)
+                                .FirstOrDefault(c => c == category);
+
+                            product = data.Warehouse
+                                .Include(p => p.ProductCategory)
+                                .FirstOrDefault(p => p == products[choice]);
+
+                            category.Products.Add(product);
                             data.SaveChanges();
 
                             return true;
@@ -190,15 +93,22 @@ namespace WebShopApp
             return false;
         }
 
-        public bool RemoveProduct_Back(int choice, ref Product product,  Category category) // Удаление товара / Removing product
+        public bool RemoveProductFromCategory_Back(int choice, ref Product product, Category category) // Удаление товара из категории / Removing product from category
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (data.Warehouse.Any(p => p.Name == category.Products[choice].Name))
-                    {
-                        product = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == choice);
+                    category = data.Categories
+                        .Include(c => c.Products)
+                        .FirstOrDefault(c => c == category);
+
+                    if (data.Warehouse.Any(p => p == category.Products[choice]))
+                    {                       
+                        product = data.Warehouse
+                            .Include(p => p.ProductCategory)
+                            .FirstOrDefault(p => p.Id == choice);
+
                         product.ProductCategory = null;
                         category.Products.Remove(product);
                         data.SaveChanges();

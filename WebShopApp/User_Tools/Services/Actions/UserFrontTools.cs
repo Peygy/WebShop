@@ -5,13 +5,15 @@ using System.Text;
 namespace WebShopApp
 {
     class UserFrontTools // Класс взаимодействия пользователя с магазином / User interaction class with the store
-    {
-        Random gener;
-        ModerFrontTools moderAct = new ModerFrontTools();
+    {       
         UserBackTools userAct = new UserBackTools();
+        OutputModelsFront output = new OutputModelsFront();
 
+        Random gener;
         Category category;
+        Product product;
         Order order;
+
 
         public void CategoriesOutput(Customer user) // Категории для покупки товаров / Categories for buying products 
         {
@@ -20,11 +22,9 @@ namespace WebShopApp
             while (!exit)
             {
                 Console.WriteLine("*Для выхода в меню введите - menu");
-                Console.WriteLine();
 
-                moderAct.ViewAllCategories();
+                output.ViewAllCategories();
 
-                Console.WriteLine();
                 Console.Write("Выберите нужную вам категорию: ");
                 string categoryChoice = Console.ReadLine();
                 int.TryParse(categoryChoice, out int categoryInput);
@@ -46,7 +46,8 @@ namespace WebShopApp
                 {
                     Console.Clear();
                     Console.WriteLine();
-                    Console.WriteLine("Такого номера категории не существует! Нажмите Enter и введите другой номер!");
+                    Console.WriteLine("Такого номера категории не существует! " +
+                        "Нажмите Enter и введите другой номер!");
                     Console.ReadLine();
                     Console.Clear();
                 }
@@ -66,9 +67,12 @@ namespace WebShopApp
 
                 for (int i = 0; i < category.Products.Count; i++)
                 {
-                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => Цена: {category.Products[i].Price} рублей");
+                    Console.WriteLine($"{i + 1}. {category.Products[i].Name} => " +
+                        $"Цена: {category.Products[i].Price} ₽");
                 }
 
+
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.Write("Выберите нужный вам товар: ");
                 string productChoice = Console.ReadLine();
@@ -84,6 +88,7 @@ namespace WebShopApp
                 {
                     Console.Clear();
                     category.Products[productNum].ProductInfo();
+
                     Console.WriteLine("1. Добавить в корзину");
                     Console.WriteLine("2. Вернуться в меню");
                     Console.WriteLine();
@@ -94,7 +99,9 @@ namespace WebShopApp
                         userAct.AddToBasket_Back(product, user);
 
                         Console.Clear();
-                        Console.WriteLine($"Товар '{category.Products[productNum].Name}' успешно добавлен в корзину! Нажмите Enter");
+                        Console.WriteLine();
+                        Console.WriteLine($"Товар '{category.Products[productNum].Name}' " +
+                            $"успешно добавлен в корзину! Нажмите Enter");
                         Console.ReadLine();
                     }
 
@@ -104,7 +111,8 @@ namespace WebShopApp
                 {
                     Console.Clear();
                     Console.WriteLine();
-                    Console.WriteLine("Такого номера товара не существует! Нажмите Enter и введите другой номер!");
+                    Console.WriteLine("Такого номера товара не существует! " +
+                        "Нажмите Enter и введите другой номер!");
                     Console.ReadLine();
                     Console.Clear();
                 }
@@ -118,8 +126,9 @@ namespace WebShopApp
             gener = new Random();
             bool exit = false;
             int orderNumber = 0;
+            int generalCost = 0;
 
-            if (user.Basket.Count == 0)
+            if (userAct.BasketEmptyCheck_Back(user))
             {
                 Console.Clear();
                 Console.WriteLine();
@@ -141,7 +150,23 @@ namespace WebShopApp
 
             Console.WriteLine("Корзина:");
             Console.WriteLine();
-            user.BasketInfo();
+            userAct.BasketInfo_Back(ref user);
+
+            for (int i = 0; i < user.Basket.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. Название: {user.Basket[i].Name}; " +
+                    $"Цена: {user.Basket[i].Price} ₽");
+
+                generalCost = generalCost + user.Basket[i].Price;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Итого: {user.Basket.Count} " +
+                $"товар(а) на {generalCost} ₽");
+
+
+            Console.WriteLine();
+            Console.WriteLine();
             Console.WriteLine("1. Оформить заказ");
             Console.WriteLine("2. Удалить товары");
             Console.WriteLine("3. Выйти в меню");
@@ -170,24 +195,42 @@ namespace WebShopApp
 
         public void RegistrationOrder(Customer user, int orderNumber) // Оформить заказ / Checkout
         {
-            if (user.Basket.Count == 0)
+            int generalCost = 0;
+
+            if (userAct.BasketEmptyCheck_Back(user))
             {
                 Console.Clear();
                 Console.WriteLine();
                 Console.WriteLine("Ваша корзина пуста!");
                 Console.ReadLine();
+
                 return;
             }
 
-            Console.WriteLine();
-            Console.WriteLine("ВНИМАНИЕ! Оплата онлайн временно не доступна! Автоматически выбрана: Оплата при получении");
+            Console.WriteLine("ВНИМАНИЕ! Оплата онлайн временно не доступна! " +
+                "Автоматически выбрана: Оплата при получении");
             Console.ReadLine();
             Console.Clear();
 
             Console.WriteLine($"Ваш заказ номер: {orderNumber}");
             Console.WriteLine();
             Console.WriteLine("В вашем заказе:");
-            user.BasketInfo();
+            userAct.BasketInfo_Back(ref user);
+
+            for (int i = 0; i < user.Basket.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. Название: {user.Basket[i].Name}; " +
+                    $"Цена: {user.Basket[i].Price} ₽");
+
+                generalCost = generalCost + user.Basket[i].Price;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Общая стоимость: {generalCost} ₽");
+            Console.WriteLine();
+
+
+            Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("1. Подтвердить заказ");
             Console.WriteLine("2. Выйти в меню");
@@ -197,6 +240,7 @@ namespace WebShopApp
                 userAct.RegistrationOrder_Back(user, orderNumber);
 
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine("Заказ успешно оформлен, следите за его статусом!");
                 Console.ReadLine();
             }
@@ -204,27 +248,45 @@ namespace WebShopApp
 
         public void ProductRemoveFromBasket(Customer user) // Удалить товар из корзины / Remove product from basket
         {
-            if (user.Basket.Count == 0)
+            int generalCost = 0;
+
+            if (userAct.BasketEmptyCheck_Back(user))
             {
                 Console.Clear();
                 Console.WriteLine();
                 Console.WriteLine("Ваша корзина пуста!");
                 Console.ReadLine();
+
                 return;
             }
 
+
             Console.WriteLine("Корзина:");
             Console.WriteLine();
-            user.BasketInfo();
+            userAct.BasketInfo_Back(ref user);
+
+            for (int i = 0; i < user.Basket.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. Название: {user.Basket[i].Name}; " +
+                    $"Цена: {user.Basket[i].Price} ₽");
+
+                generalCost = generalCost + user.Basket[i].Price;
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"Общая стоимость: {generalCost}");
+            Console.WriteLine();
+
+
+            Console.WriteLine();
             Console.WriteLine();
             Console.Write("Какой хотите удалить товар: ");
             int.TryParse(Console.ReadLine(), out int prodNum);
-            prodNum -= 1;
-
-            userAct.ProductRemoveFromBasket_Back(user, prodNum);
+            userAct.ProductRemoveFromBasket_Back(user, ref product, prodNum);
 
             Console.Clear();
-            Console.WriteLine("Товар удален из корзины!");
+            Console.WriteLine();
+            Console.WriteLine($"Товар {product.Name} удален из корзины!");
             Console.ReadLine();
         }
 
@@ -236,7 +298,7 @@ namespace WebShopApp
 
             while (!exit)
             {
-                if (userAct.OrdersInfo_Back(user, OrderInput, ref order, 0))
+                if (userAct.OrdersInfo_Back(ref user, OrderInput, ref order, 0))
                 {
                     Console.Clear();
                     Console.WriteLine();
@@ -247,10 +309,14 @@ namespace WebShopApp
                 }
 
                 Console.WriteLine("*Для выхода в меню введите - menu");
+                Console.WriteLine();
                 Console.WriteLine("Ваши заказы: ");
                 Console.WriteLine();
 
-                userAct.OrdersInfo_Back(user, OrderInput, ref order, 1);
+                for (int i = 0; i < user.Orders.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {user.Orders[i].OrderNum}");
+                }
 
                 Console.WriteLine();
                 string input = Console.ReadLine();
@@ -262,38 +328,40 @@ namespace WebShopApp
                     return;
                 }
 
-                if (userAct.OrdersInfo_Back(user, OrderInput, ref order, 2))
+                if (userAct.OrdersInfo_Back(ref user, OrderInput, ref order, 1))
                 {
                     Console.Clear();
                     Console.WriteLine("*Для выхода в меню заказов введите - menu");
+                    Console.WriteLine();
                     Console.WriteLine($"Заказ номер: {order.OrderNum}");
                     Console.WriteLine($"Статус заказа: {order.Status}");
                     Console.WriteLine();
                     Console.WriteLine("У Вас в заказе:");
 
-                    foreach (Product product in order.OrderProducts)
-                    {
-                        products.Add(product);
-                    }
-
                     for (int i = 0; i < products.Count; i++)
                     {
-                        Console.WriteLine($"Название: {products[i].Name} => Цена: {products[i].Price} рублей");
+                        Console.WriteLine($"Название: {order.OrderProducts[i].Name} => " +
+                            $"Цена: {order.OrderProducts[i].Price} ₽");
                     }
 
+                    Console.WriteLine();
+                    Console.WriteLine();
                     Console.WriteLine("1. Удалить заказ");
 
                     if (Console.ReadLine() == "1")
                     {
                         Console.Clear();
+                        Console.WriteLine();
                         Console.WriteLine("Вы точно хотите удалить заказ?");
+                        Console.WriteLine();
+                        Console.WriteLine();
                         Console.WriteLine("1. Да");
                         Console.WriteLine("2. Нет");
                         Console.WriteLine();
 
                         if (Console.ReadLine() == "1")
                         {
-                            userAct.OrdersInfo_Back(user, OrderInput, ref order, 3);
+                            userAct.OrdersInfo_Back(ref user, OrderInput, ref order, 2);
                         }
                     }
                 }
@@ -301,7 +369,8 @@ namespace WebShopApp
                 {
                     Console.Clear();
                     Console.WriteLine();
-                    Console.WriteLine("Такого номера заказа не существует! Нажмите Enter и введите другой!");
+                    Console.WriteLine("Такого номера заказа не существует! " +
+                        "Нажмите Enter и введите другой!");
                     Console.ReadLine();
                     Console.Clear();
                 }
@@ -311,7 +380,10 @@ namespace WebShopApp
 
         public void AccountRemove(Customer user) // Удалить аккаунт / Remove account
         {
+            Console.WriteLine();
             Console.WriteLine("Вы точно хотите удалить Ваш аккаунт?");
+            Console.WriteLine();
+            Console.WriteLine();
             Console.WriteLine("1. Да, точно");
             Console.WriteLine("2. Нет, вернуться в меню");
 
@@ -327,7 +399,8 @@ namespace WebShopApp
                 else
                 {
                     Console.Clear();
-                    Console.WriteLine("ОШИБКА! Ваш аккаунт НЕ удален!");
+                    Console.WriteLine();
+                    Console.WriteLine("WARNING! Ваш аккаунт НЕ удален!");
                     Console.ReadLine();
                 }
             }

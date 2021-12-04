@@ -5,13 +5,14 @@ using System.Text;
 namespace WebShopApp
 {
     class UserMenu // Меню Пользователя / User's menu
-    {
+    {       
+        UserFrontTools actions = new UserFrontTools();
+
         Customer user;
-        UserFrontTools actions;
+
 
         public UserMenu(Customer UserInput)
         {
-            actions = new UserFrontTools();
             user = UserInput;
         }
 
@@ -24,6 +25,7 @@ namespace WebShopApp
                 Console.Clear();
                 Console.WriteLine("Добро Пожаловать в наш интернет-магазин!");
                 Console.WriteLine("Выберите номер пункта из меню:");
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("1. Начать покупку");
                 Console.WriteLine("2. Посмотреть корзину");
@@ -61,7 +63,9 @@ namespace WebShopApp
                     case "5":
                         {
                             Console.Clear();
+                            Console.WriteLine();
                             Console.WriteLine("Спасибо за покупки, приходите ещё!");
+
                             exit = true;
                             break;
                         }

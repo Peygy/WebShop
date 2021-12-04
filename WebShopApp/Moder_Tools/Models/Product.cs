@@ -16,6 +16,7 @@ namespace WebShopApp
 
         public void ProductInfo() // Информация товара / Product information
         {
+            Console.WriteLine();
             Console.WriteLine($"Название товара: {Name}");
             if (ProductCategory.Name == null)
             {
@@ -25,7 +26,7 @@ namespace WebShopApp
             {
                 Console.WriteLine($"Категория: {ProductCategory.Name}");
             }
-            Console.WriteLine($"Цена: {Price}");
+            Console.WriteLine($"Цена: {Price} ₽");
             Console.WriteLine();
             Console.WriteLine();
         }

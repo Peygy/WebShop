@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class AdminDataContext : DbContext // Класс контекста для сотрудников / Context class for staff
+    public class AdminDataContext : DbContext // Класс контекста для сотрудников / Context class for staff
     {
         public DbSet<Customer> Users { get; set; }
         public DbSet<Product> Warehouse { get; set; }
@@ -21,7 +21,15 @@ namespace WebShopApp
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=ShopData;Trusted_Connection=True;");
+            #if RELEASE
+                optionsBuilder
+                    .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=ShopData;Trusted_Connection=True;");
+            #endif
+
+            #if DEBUG
+                optionsBuilder
+                    .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=TestData;Trusted_Connection=True;");
+            #endif
         }
     }
 }

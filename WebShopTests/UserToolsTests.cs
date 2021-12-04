@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NUnit.Framework;
 using System.Linq;
 using WebShopApp;
 
 namespace WebShopTests
 {
+    /*
     [TestFixture]
     class UserToolsTests // Тестирование инструментов для взаимодействия пользователя с магазином / Testing tools for user interaction with the store
     {
@@ -254,4 +254,5 @@ namespace WebShopTests
             Assert.AreEqual(true, checking);
         }
     }
+    */
 }

@@ -6,12 +6,9 @@ namespace WebShopApp
 {
     class ModerMenu // Меню Модерации / Moderation Menu
     {
-        ModerFrontTools moderAct;
+        ModerFrontTools moderAct = new ModerFrontTools();
+        OutputModelsFront output = new OutputModelsFront();
 
-        public ModerMenu()
-        {
-            moderAct = new ModerFrontTools();
-        }
 
         public void ModerShowcase() // Вывод меню модератора / Output moderation menu
         {
@@ -21,6 +18,7 @@ namespace WebShopApp
             {
                 Console.Clear();
                 Console.WriteLine("Меню модерации магазина:");
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("1. Просмотреть/Редактировать категории");
                 Console.WriteLine("2. Просмотреть товары");
@@ -39,28 +37,30 @@ namespace WebShopApp
                     case "2":
                         {
                             Console.Clear();
-                            moderAct.ViewAllProducts();
+                            output.ViewAllProducts();
                             Console.ReadLine();
                             break;
                         }
                     case "3":
                         {
                             Console.Clear();
-                            moderAct.ViewAllOrders();
+                            output.ViewAllOrders();
                             Console.ReadLine();
                             break;
                         }
                     case "4":
                         {
                             Console.Clear();
-                            moderAct.ViewAllUsers();
+                            output.ViewAllUsers();
                             Console.ReadLine();
                             break;
                         }
                     case "5":
                         {
                             Console.Clear();
+                            Console.WriteLine();
                             Console.WriteLine("Выход выполнен успешно, До Свидания!");
+
                             exit = true;
                             break;
                         }

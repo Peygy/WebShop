@@ -5,7 +5,8 @@ using System.Text;
 namespace WebShopApp
 {
     class AdminFrontTools // Класс управления администрации / Administration control class
-    {        
+    {
+        OutputModelsFront output = new OutputModelsFront();
         ModerFrontTools moderAct = new ModerFrontTools();
         AdminBackTools adminAct = new AdminBackTools();
 
@@ -15,11 +16,12 @@ namespace WebShopApp
         Customer customer;
         Moderator moder;
 
+
         public void CategorySetUp() // Добавление новой или настройка существующей категории / Adding new or customizing an existing category
         {
-            moderAct.ViewAllCategories();
+            output.ViewAllCategories();
 
-            Console.WriteLine();
+
             Console.WriteLine("1. Добавить новую категорию");
             Console.WriteLine("2. Редактировать категорию");
 
@@ -62,9 +64,9 @@ namespace WebShopApp
                 if (adminAct.AddNewCategory_Back(categoryName))
                 {
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine($"Категория '{categoryName}' добавлена");
                     Console.ReadLine();
-
                     exit = true;
                 }
                 else
@@ -83,6 +85,7 @@ namespace WebShopApp
             moderAct.EditCategory(ref category);
 
             Console.WriteLine();
+            Console.WriteLine();
             Console.WriteLine("1. Добавить товар");
             Console.WriteLine("2. Удалить товар");
             Console.WriteLine("3. Переименовать категорию");
@@ -93,13 +96,13 @@ namespace WebShopApp
                 case "1":
                     {
                         Console.Clear();
-                        moderAct.AddProduct(category); // Из инструментов модератора / From moderator tools
+                        moderAct.AddProductIntoCategory(category); // Из инструментов модератора / From moderator tools
                         break;
                     }
                 case "2":
                     {
                         Console.Clear();
-                        moderAct.RemoveProduct(category); // Из инструментов модератора / From moderator tools
+                        moderAct.RemoveProductFromCategory(category); // Из инструментов модератора / From moderator tools
                         break;
                     }
                 case "3":
@@ -131,7 +134,7 @@ namespace WebShopApp
             {
                 Console.WriteLine();
                 Console.WriteLine($"Текущее название категории: {categoryNameOld}");
-
+                Console.WriteLine();
                 Console.Write("Введите новое название категории: ");
                 categoryNameNew = Console.ReadLine();
 
@@ -167,6 +170,7 @@ namespace WebShopApp
             Console.WriteLine();
             Console.WriteLine($"Вы точно хотите удалить категорию '{category.Name}'?");
             Console.WriteLine();
+            Console.WriteLine();
             Console.WriteLine("1. Да");
             Console.WriteLine("2. Нет");
 
@@ -175,6 +179,7 @@ namespace WebShopApp
                 adminAct.RemoveCategory_Back(category);
 
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine($"Категория '{category.Name}' удалена");
                 Console.ReadLine();
             }
@@ -184,9 +189,9 @@ namespace WebShopApp
 
         public void ProductSetUp() // Добавить, редактировать или удалить товар / Add, edit or remove a product
         {
-            moderAct.ViewAllProducts();
+            output.ViewAllProducts();
 
-            Console.WriteLine();
+
             Console.WriteLine("1. Добавить товар");
             Console.WriteLine("2. Редактировать товар");
             Console.WriteLine("3. Удалить товар");
@@ -221,14 +226,14 @@ namespace WebShopApp
         public void AddNewProduct() // Добавить новый товар / Add new product
         {
             bool exit = false;
+            bool categoryCheck = false;
+            int productPrice = 0;
+            int categoryChoice = 0;
+            string productCategoryName = "";
 
             while (!exit)
             {
-                bool categoryCheck = false;
-                int productPrice = 0;
-                int categoryChoice = 0;
-                string productCategoryName = "";
-
+                Console.WriteLine();
                 Console.Write("Название товара: ");
                 string productName = Console.ReadLine();
 
@@ -239,10 +244,9 @@ namespace WebShopApp
 
                 while (!categoryCheck)
                 {
-                    Console.Clear();
-                    moderAct.ViewAllCategories();
+                    output.ViewAllCategories();
 
-                    Console.WriteLine();
+
                     Console.Write("Категория товара: ");
                     int.TryParse(Console.ReadLine(), out categoryChoice);
                     categoryChoice -= 1;
@@ -262,13 +266,16 @@ namespace WebShopApp
                 }
 
                 Console.Clear();
+                Console.WriteLine();
                 Console.Write("Цена товара: ");
                 int.TryParse(Console.ReadLine(), out productPrice);
 
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine($"Название товара: {productName}");
                 Console.WriteLine($"Категория товара: {productCategoryName}");
-                Console.WriteLine($"Цена товара: {productPrice} рублей");
+                Console.WriteLine($"Цена товара: {productPrice} ₽");
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("1. Подтвердить");
                 Console.WriteLine("2. Составить заново");
@@ -278,9 +285,9 @@ namespace WebShopApp
                     adminAct.AddNewProduct_Back(categoryChoice, productName, ref productCategoryName, productPrice, 1);
 
                     Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine($"Товар '{productName}' добавлен");
                     Console.ReadLine();
-
                     exit = true;
                 }
                 else
@@ -296,10 +303,9 @@ namespace WebShopApp
 
             while (!exit)
             {
-                Console.Clear();
-                moderAct.ViewAllProducts();
+                output.ViewAllProducts();
 
-                Console.WriteLine();
+
                 Console.Write("Выберите товар для редактирования: ");
                 string editProduct = Console.ReadLine();
                 int.TryParse(editProduct, out int choice);
@@ -323,7 +329,6 @@ namespace WebShopApp
                     Console.Clear();
                 }       
             }
-
 
             Console.WriteLine("1. Изменить название товара");
             Console.WriteLine("2. Изменить категорию товара");
@@ -367,7 +372,6 @@ namespace WebShopApp
                 Console.WriteLine();
                 Console.WriteLine($"Текущее название товара: {productNameOld}");
                 Console.WriteLine();
-
                 Console.Write("Введите новое название товара: ");
                 productNameNew = Console.ReadLine();
 
@@ -406,13 +410,11 @@ namespace WebShopApp
 
             while (!exit)
             {
-                moderAct.ViewAllCategories();
+                output.ViewAllCategories();
 
-                Console.WriteLine();
-                Console.WriteLine();
+
                 Console.WriteLine($"Текущая категория товара: {productCategOld}");
                 Console.WriteLine();
-
                 Console.Write("Введите новую категорию товара: ");
                 string productCategNew = Console.ReadLine();
                 int.TryParse(productCategNew, out int newCategId);
@@ -423,7 +425,7 @@ namespace WebShopApp
                     return;
                 }
 
-                if (adminAct.EditProductCategory_Back(newCategId, productCategOld, ref category))
+                if (adminAct.EditProductCategory_Back(newCategId, product, ref category))
                 {                   
                     exit = true;
                 }
@@ -454,9 +456,8 @@ namespace WebShopApp
             while (!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущая цена товара: {productPriceOld}");
+                Console.WriteLine($"Текущая цена товара: {productPriceOld} ₽");
                 Console.WriteLine();
-
                 Console.Write("Введите новую цену товара: ");
                 string priceNew = Console.ReadLine();
                 int.TryParse(priceNew, out productPriceNew);
@@ -466,12 +467,9 @@ namespace WebShopApp
                     return;
                 }
 
-                if (productPriceNew >= 0)
+                if (productPriceNew >= 0 && adminAct.EditProductPrice_Back(product, productPriceNew))
                 {
-                    if(adminAct.EditProductPrice_Back(product, productPriceNew))
-                    {
-                        exit = true;
-                    }                  
+                    exit = true;
                 }
                 else
                 {
@@ -485,9 +483,9 @@ namespace WebShopApp
 
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine($"Старая цена товара: {productPriceOld}");
+            Console.WriteLine($"Старая цена товара: {productPriceOld} ₽");
             Console.WriteLine();
-            Console.WriteLine($"Новая цена товара: {productPriceNew}");
+            Console.WriteLine($"Новая цена товара: {productPriceNew} ₽");
             Console.ReadLine();
         }
 
@@ -497,9 +495,9 @@ namespace WebShopApp
 
             while (!exit)
             {
-                moderAct.ViewAllProducts();
+                output.ViewAllProducts();
 
-                Console.WriteLine();
+
                 Console.Write("Товар для удаления: ");
                 string removeProduct = Console.ReadLine();
                 int.TryParse(removeProduct, out int productChoice);
@@ -533,9 +531,9 @@ namespace WebShopApp
 
         public void OrdersSetUp() // Настройка заказов / Setting up orders
         {
-            moderAct.ViewAllOrders();
+            output.ViewAllOrders();
 
-            Console.WriteLine();
+
             Console.WriteLine("1. Просмотреть заказ");
             Console.WriteLine("2. Удалить заказ");
 
@@ -566,9 +564,9 @@ namespace WebShopApp
 
             while(!exit)
             {
-                moderAct.ViewAllOrders();
+                output.ViewAllOrders();
 
-                Console.WriteLine();
+
                 Console.Write("Введите заказ для просмотра: ");
                 string orderForView = Console.ReadLine();
                 int.TryParse(orderForView, out int orderNumber);
@@ -581,6 +579,8 @@ namespace WebShopApp
 
                 if (adminAct.OrdersView_Back(orderNumber, ref order))
                 {
+                    Console.Clear();
+                    Console.WriteLine();
                     Console.WriteLine($"Номер заказа: {order.OrderNum}");
                     Console.WriteLine($"Пользователь: {order.User}");
                     Console.WriteLine($"Статус: {order.Status}");
@@ -589,10 +589,11 @@ namespace WebShopApp
 
                     for (int i = 0; i < order.OrderProducts.Count; i++)
                     {
-                        Console.WriteLine($"Название: {order.OrderProducts[i].Name} => Цена: {order.OrderProducts[i].Price} рублей");
+                        Console.WriteLine($"Название: {order.OrderProducts[i].Name} => " +
+                            $"Цена: {order.OrderProducts[i].Price} ₽");
                     }
-                    Console.ReadLine();
 
+                    Console.ReadLine();
                     exit = true;
                 }
                 else
@@ -612,9 +613,9 @@ namespace WebShopApp
 
             while (!exit)
             {
-                moderAct.ViewAllOrders();
+                output.ViewAllOrders();
 
-                Console.WriteLine();
+
                 Console.Write("Введите заказ для удаления: ");
                 string choice = Console.ReadLine();
                 int.TryParse(choice, out int orderId);
@@ -648,9 +649,9 @@ namespace WebShopApp
 
         public void UsersSetUp() // Настройка пользователей / Setting up users
         {
-            moderAct.ViewAllUsers();
+            output.ViewAllUsers();
 
-            Console.WriteLine();
+
             Console.WriteLine("1. Удалить пользователя");
 
             switch (Console.ReadLine())
@@ -674,9 +675,9 @@ namespace WebShopApp
 
             while (!exit)
             {
-                moderAct.ViewAllUsers();
+                output.ViewAllUsers();
 
-                Console.WriteLine();
+
                 Console.Write("Введите пользователя для удаления: ");
                 string choice = Console.ReadLine();
                 int.TryParse(choice, out int userId);
@@ -711,9 +712,9 @@ namespace WebShopApp
 
         public void ModersSetUp() // Настройка модераторов / Setting up moders
         {
-            ViewAllModers();
+            output.ViewAllModers();
 
-            Console.WriteLine();
+
             Console.WriteLine("1. Добавить модератора");
             Console.WriteLine("2. Удалить модератора");
 
@@ -778,8 +779,10 @@ namespace WebShopApp
                 moderPassword = Console.ReadLine();
 
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine($"Логин модератора: {moderLogin}");
                 Console.WriteLine($"Пароль модератор: {moderPassword}");
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("1. Подтвердить");
                 Console.WriteLine("2. Пересоздать");
@@ -797,9 +800,9 @@ namespace WebShopApp
 
             while (!exit)
             {
-                ViewAllModers();
+                output.ViewAllModers();
 
-                Console.WriteLine();
+
                 Console.Write("Введите модератора для удаления: ");
                 string choice = Console.ReadLine();
                 int.TryParse(choice, out int moderId);
@@ -872,8 +875,10 @@ namespace WebShopApp
                 adminPassword = Console.ReadLine();
 
                 Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine($"Логин модератора: {adminLogin}");
                 Console.WriteLine($"Пароль модератор: {adminPassword}");
+                Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("1. Подтвердить");
                 Console.WriteLine("2. Пересоздать");
@@ -884,14 +889,6 @@ namespace WebShopApp
                     exit = true;
                 }
             }
-        }
-
-        public void ViewAllModers() // Посмотреть всех модераторов
-        {
-            Console.WriteLine("Все модераторы:");
-            Console.WriteLine();
-
-            adminAct.ViewAllModers_Back();
-        }
+        }       
     }
 }

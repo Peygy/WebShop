@@ -16,7 +16,10 @@ namespace WebShopApp
                 {
                     if (data.Users.Any(u => u.Login == login && u.Password == password))
                     {
-                        user = data.Users.Include(u => u.Basket).Include(u => u.Orders).FirstOrDefault(u => u.Login == login && u.Password == password);
+                        user = data.Users
+                            .Include(u => u.Basket)
+                            .Include(u => u.Orders)
+                            .FirstOrDefault(u => u.Login == login && u.Password == password);
 
                         return true;
                     }
@@ -28,7 +31,9 @@ namespace WebShopApp
 
                         if (key == data.Moders.FirstOrDefault(m => m.Login == login && m.Password == password).SpecialKey)
                         {
-                            int userId = data.Moders.FirstOrDefault(m => m.Login == login && m.Password == password && m.SpecialKey == key).Id;
+                            int userId = data.Moders
+                                .FirstOrDefault(m => m.Login == login && m.Password == password && m.SpecialKey == key).Id;
+
                             user = new Customer { Id = userId, Login = login, Password = password, SpecialKey = key };
 
                             return true;
@@ -74,7 +79,11 @@ namespace WebShopApp
                         user = new Customer { Login = login, Password = password, SpecialKey = "00" };
                         data.Users.Add(user);
                         data.SaveChanges();
-                        user = data.Users.Include(u => u.Basket).Include(u => u.Orders).FirstOrDefault(u => u.Login == login && u.Password == password && u.SpecialKey == "00");
+
+                        user = data.Users
+                            .Include(u => u.Basket)
+                            .Include(u => u.Orders)
+                            .FirstOrDefault(u => u.Login == login && u.Password == password && u.SpecialKey == "00");
 
                         return true;
                     }

@@ -5,14 +5,9 @@ using System.Text;
 namespace WebShopApp
 {
     class AdminMenu // Меню Админа / Admin menu
-    {
-        
-        AdminFrontTools adminAct;
+    {     
+        AdminFrontTools adminAct = new AdminFrontTools();
 
-        public AdminMenu()
-        {
-            adminAct = new AdminFrontTools();
-        }
 
         public void AdmShowcase() // Вывод меню админа / Output admin menu
         {
@@ -22,8 +17,9 @@ namespace WebShopApp
             {
                 Console.Clear();
                 Console.WriteLine("Добро пожаловать, администратор");
-                Console.WriteLine();
                 Console.WriteLine("Меню админа:");
+                Console.WriteLine();
+                Console.WriteLine();
                 Console.WriteLine("1. Добавить/Удалить/Редактировать категорию");
                 Console.WriteLine("2. Добавить/Удалить/Редактировать товар");
                 Console.WriteLine("3. Посмотреть/Удалить заказы");
@@ -66,7 +62,9 @@ namespace WebShopApp
                     case "6":
                         {
                             Console.Clear();
+                            Console.WriteLine();
                             Console.WriteLine("Выход выполнен успешно, До Свидания!");
+
                             exit = true;
                             break;
                         }

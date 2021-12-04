@@ -43,12 +43,13 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    string categoryNameOld = oldName;
-                    string categoryNameNew = newName;
-
-                    if (!data.Categories.Any(u => u.Name == categoryNameNew))
+                    if (!data.Categories.Any(u => u.Name == newName))
                     {
-                        data.Categories.Include(c => c.Products).FirstOrDefault(c => c.Name == categoryNameOld).Name = categoryNameNew;
+                        data.Categories
+                            .Include(c => c.Products)
+                            .FirstOrDefault(c => c.Name == oldName)
+                            .Name = newName;
+
                         data.SaveChanges();
 
                         return true;
@@ -75,12 +76,15 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
+                    category = data.Categories
+                            .Include(c => c.Products)
+                            .FirstOrDefault(c => c == category);
+
                     foreach (Product product in category.Products)
                     {
                         product.ProductCategory = null;
                     }
 
-                    category.Products.Clear();
                     data.Categories.Remove(category);
                     data.SaveChanges();
 
@@ -105,13 +109,15 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var categories = data.Categories.Include(c => c.Products).ToList();
+                    var categories = data.Categories
+                        .Include(c => c.Products).ToList();
 
                     if (key == 0)
                     {
-                        if (data.Categories.Any(c => c.Id == categories[categoryChoice].Id))
+                        if (data.Categories.Any(c => c == categories[categoryChoice]))
                         {
-                            productCategoryName = data.Categories.FirstOrDefault(c => c.Id == categories[categoryChoice].Id).Name;
+                            productCategoryName = data.Categories
+                                .FirstOrDefault(c => c == categories[categoryChoice]).Name;
 
                             return true;
                         }
@@ -122,7 +128,10 @@ namespace WebShopApp
                     }
                     else
                     {
-                        Category category = data.Categories.Include(c => c.Products).FirstOrDefault(с => с.Name == data.Categories.FirstOrDefault(c => c.Id == categories[categoryChoice].Id).Name);
+                        Category category = data.Categories
+                            .Include(c => c.Products)
+                            .FirstOrDefault(с => с == categories[categoryChoice]);
+
                         Product newProduct = new Product { Name = productName, ProductCategory = category, Price = productPrice };
 
                         data.Warehouse.Add(newProduct);
@@ -151,7 +160,9 @@ namespace WebShopApp
                 {                   
                     if (data.Warehouse.Any(p => p.Id == choice))
                     {
-                        product = data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.Id == choice);                        
+                        product = data.Warehouse
+                            .Include(p => p.ProductCategory)
+                            .FirstOrDefault(p => p.Id == choice);                        
 
                         return true;
                     }
@@ -177,12 +188,11 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    string productNameOld = oldName;
-                    string productNameNew = newName;
-
-                    if (!data.Warehouse.Any(p => p.Name == productNameNew))
+                    if (!data.Warehouse.Any(p => p.Name == newName))
                     {
-                        data.Warehouse.FirstOrDefault(p => p.Name == productNameOld).Name = productNameNew;
+                        data.Warehouse
+                            .FirstOrDefault(p => p.Name == oldName).Name = newName;
+
                         data.SaveChanges();
 
                         return true;
@@ -203,18 +213,26 @@ namespace WebShopApp
             return false;
         }
 
-        public bool EditProductCategory_Back(int newCategId, string productCategOld, ref Category category) // Изменение категории товара / Changing product category
+        public bool EditProductCategory_Back(int newCategId, Product product, ref Category category) // Изменение категории товара / Changing product category
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var categories = data.Categories.Include(c => c.Products).ToList();
+                    var categories = data.Categories
+                        .Include(c => c.Products).ToList();
 
-                    if (data.Categories.Any(c => c.Id == categories[newCategId].Id))
+                    if (data.Categories.Any(c => c == categories[newCategId]))
                     {
-                        category = data.Categories.Include(c => c.Products).FirstOrDefault(c => c.Id == categories[newCategId].Id);
-                        data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.ProductCategory.Name == productCategOld).ProductCategory = category;
+                        category = data.Categories
+                            .Include(c => c.Products)
+                            .FirstOrDefault(c => c == categories[newCategId]);
+
+                        data.Warehouse
+                            .Include(p => p.ProductCategory)
+                            .FirstOrDefault(p => p == product)
+                            .ProductCategory = category;
+
                         data.SaveChanges();
 
                         return true;
@@ -241,7 +259,10 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    data.Warehouse.FirstOrDefault(p => p.Name == product.Name).Price = productPriceNew;
+                    data.Warehouse
+                        .FirstOrDefault(p => p == product)
+                        .Price = productPriceNew;
+
                     data.SaveChanges();
 
                     return true;
@@ -257,22 +278,19 @@ namespace WebShopApp
             return false;
         }
 
-
-        public bool RemoveProduct_Back(int productChoice, ref Product deletedProduct) // Удаление товара / Removing product
+        public bool RemoveProduct_Back(int productChoice, ref Product product) // Удаление товара / Removing product
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
+                    var products = data.Warehouse
+                        .Include(p => p.ProductCategory).ToList();
 
-                    if (data.Warehouse.Any(p => p.Id == products[productChoice].Id))
+                    if (data.Warehouse.Any(p => p == products[productChoice]))
                     {
-                        deletedProduct = products[productChoice];
-                        Category category = deletedProduct.ProductCategory;
-
-                        category.Products.Remove(deletedProduct);
-                        data.Warehouse.Remove(deletedProduct);
+                        product = products[productChoice];
+                        data.Warehouse.Remove(product);
                         data.SaveChanges();
 
                         return true;
@@ -301,9 +319,11 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Include(o => o.OrderProducts).Include(o => o.User).ToList();
+                    var orders = data.Orders
+                        .Include(o => o.OrderProducts)
+                        .Include(o => o.User).ToList();
 
-                    if(data.Orders.Any(o => o.Id == orders[orderNumber].Id))
+                    if(data.Orders.Any(o => o == orders[orderNumber]))
                     {
                         order = orders[orderNumber];
 
@@ -331,13 +351,22 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var orders = data.Orders.Include(o => o.OrderProducts).Include(o => o.User).ToList();
+                    var orders = data.Orders
+                        .Include(o => o.OrderProducts)
+                        .Include(o => o.User).ToList();                   
 
-                    if (data.Orders.Any(o => o.Id == orders[orderId].Id))
+                    if (data.Orders.Any(o => o == orders[orderId]))
                     {
                         order = orders[orderId];
-                        order.User.Orders.Remove(order);
-                        data.Orders.Remove(order);
+                        Order orderForRemove = order;
+
+                        Customer user = data.Users
+                            .Include(u => u.Basket)
+                            .Include(u => u.Orders)
+                            .FirstOrDefault(u => u == orderForRemove.User);
+
+                        user.Orders.Remove(orderForRemove);
+                        data.Orders.Remove(orderForRemove);
                         data.SaveChanges();                        
 
                         return true;
@@ -366,19 +395,22 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var customers = data.Users.Include(u => u.Basket).Include(u => u.Orders).ToList();
+                    var customers = data.Users
+                        .Include(u => u.Basket)
+                        .Include(u => u.Orders).ToList();
 
-                    if (data.Users.Any(u => u.Id == customers[userId].Id))
+                    if (data.Users.Any(u => u == customers[userId]))
                     {
-                        customer = data.Users.Include(u => u.Basket).Include(u => u.Orders).FirstOrDefault(u => u.Id == customers[userId].Id);
+                        customer = data.Users
+                            .Include(u => u.Basket)
+                            .Include(u => u.Orders)
+                            .FirstOrDefault(u => u == customers[userId]);
 
                         for (int i = 0; i < customer.Orders.Count; i++)
                         {
                             data.Orders.Remove(customer.Orders[i]);
                         }
 
-                        customer.Orders.Clear();
-                        customer.Basket.Clear();
                         data.Users.Remove(customer);
                         data.SaveChanges();
 
@@ -410,11 +442,11 @@ namespace WebShopApp
                 {
                     if (!data.Moders.Any(m => m.Login == moderLogin))
                     {
-                        if(key == 0)
+                        if(key == 0) // 'moder' emptyCheck
                         {
                             return true;
                         }
-                        else
+                        else // 'moder' ModerAdding
                         {
                             Moderator moderator = new Moderator { Login = moderLogin, Password = moderPassword, SpecialKey = "01" };
                             data.Moders.Add(moderator);
@@ -445,12 +477,16 @@ namespace WebShopApp
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    var moders = data.Moders.Where(m => m.Login != "Peygy").ToList();
+                    var moders = data.Moders
+                        .Where(m => m.Login != "Peygy").ToList();
 
-                    if (data.Moders.Any(m => m.Id == moders[moderId].Id))
+                    if (data.Moders.Any(m => m == moders[moderId]))
                     {
                         moder = moders[moderId];
-                        data.Moders.Remove(data.Moders.FirstOrDefault(m => m.Id == moders[moderId].Id));
+
+                        data.Moders.Remove(data.Moders
+                            .FirstOrDefault(m => m == moders[moderId]));
+
                         data.SaveChanges();
 
                         return true;
@@ -481,11 +517,11 @@ namespace WebShopApp
                 {
                     if (!data.Moders.Any(m => m.Login == adminLogin))
                     {
-                        if (key == 0)
+                        if (key == 0) // 'admin' emptyCheck
                         {
                             return true;
                         }
-                        else
+                        else // 'admin' AdminAdding
                         {
                             Admin moderator = new Admin { Login = adminLogin, Password = adminPassword, SpecialKey = "011" };
                             data.Moders.Add(moderator);
@@ -501,32 +537,6 @@ namespace WebShopApp
                 }
             }
             catch (DbUpdateException ex)
-            {
-                Console.Clear();
-                Console.WriteLine(ex.Message);
-                Console.ReadLine();
-            }
-
-            return false;
-        }
-
-        public bool ViewAllModers_Back() // Посмотреть всех модераторов / View all moderators
-        {
-            try
-            {
-                using (AdminDataContext data = new AdminDataContext())
-                {
-                    var moderators = data.Moders.Where(m => m.Login != "Peygy").ToList();
-
-                    for (int i = 0; i < moderators.Count; i++)
-                    {
-                        Console.WriteLine($"{i + 1}. {moderators[i].Login} => Пароль: {moderators[i].Password}, Спец. ключ: {moderators[i].SpecialKey}");
-                    }
-
-                    return true;
-                }
-            }
-            catch(Exception ex)
             {
                 Console.Clear();
                 Console.WriteLine(ex.Message);
