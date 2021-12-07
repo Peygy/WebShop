@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace WebShopApp
 {
-    public class Customer // Покупатель / Customer
+    public class Customer // Покупатель
+                          // Customer
     {
         public int Id { get; set; }
         public string Login { get; set; } // Login = Name

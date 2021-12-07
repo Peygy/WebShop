@@ -4,12 +4,14 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class AdminMenu // Меню Админа / Admin menu
+    class AdminMenu // Меню Админа
+                    // Admin menu
     {     
         AdminFrontTools adminAct = new AdminFrontTools();
 
 
-        public void AdmShowcase() // Вывод меню админа / Output admin menu
+        public void AdmShowcase() // Вывод меню админа
+                                  // Output admin menu
         {
             bool exit = false;
 

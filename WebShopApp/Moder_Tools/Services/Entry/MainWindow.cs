@@ -4,7 +4,8 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class MainWindow // Начальный экран / Home screen
+    class MainWindow // Начальный экран
+                     // Home screen
     {
         UserEntryFront entry;
         Customer user;
@@ -16,7 +17,8 @@ namespace WebShopApp
             AppStart();
         }
 
-        public void AppStart() // Метод запуска приложения / App launch method
+        public void AppStart() // Метод запуска приложения
+                               // App launch method
         {
             bool exit = false;
 

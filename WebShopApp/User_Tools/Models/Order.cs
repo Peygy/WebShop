@@ -4,7 +4,8 @@ using System.Text;
 
 namespace WebShopApp
 {
-    public class Order // Класс заказа / Order class 
+    public class Order // Класс заказа
+                       // Order class 
     {
         public int Id { get; set; }
         public int OrderNum { get; set; }

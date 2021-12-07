@@ -4,7 +4,8 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class UserMenu // Меню Пользователя / User's menu
+    class UserMenu // Меню Пользователя
+                   // User's menu
     {       
         UserFrontTools actions = new UserFrontTools();
 
@@ -16,7 +17,8 @@ namespace WebShopApp
             user = UserInput;
         }
 
-        public void Showcase() // Вывод меню пользователя / Output user's menu
+        public void Showcase() // Вывод меню пользователя
+                               // Output user's menu
         {
             bool exit = false;
 

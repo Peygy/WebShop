@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class UserDataContext : DbContext // Класс контекста для пользователя / Context class for user
+    class UserDataContext : DbContext // Класс контекста для пользователя
+                                      // Context class for user
     {
         public DbSet<Product> Warehouse { get; set; }
         public DbSet<Order> Orders { get; set; }

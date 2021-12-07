@@ -1,23 +1,30 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 using System.Linq;
 using WebShopApp;
 
 namespace WebShopTests
 {
-    /*
     [TestFixture]
-    class AdminToolsTests // Тестирование инструментов(реализации) модерации для админов / Testing tools (implementation) of moderation for admins
+    class AdminToolsTests // Тестирование инструментов(реализации) модерации для админов
+                          // Testing tools (implementation) of moderation for admins
     {
-        private bool checking;
+        AdminBackTools toolsAdmin = new AdminBackTools();
 
         private Category testCategory;
         private Product testProduct;
         private Order testOrder;
-        private Customer testCustomer;
+        private Customer testUser;
         private Moderator testModer;
 
-        private string testName;
+        private bool checking;
         private string testNameNew;
+        private string testPassword;
+        private string testCategoryName;
+        private string testProductName;
+        private string testUserName;
+        private string testModerName;
+        private int testId;
         private int testNumber;
         private int testNameForOrder;
 
@@ -26,506 +33,345 @@ namespace WebShopTests
         public void Setup() // Настройка тестов / Test setup
         {
             checking = false;
-            testName = "test";
-            testNameNew = "newTest";
+
+            testPassword = "newPass";
+            testNameNew = "newName";
+            testCategoryName = "testCategory";
+            testProductName = "testProduct";
+            testUserName = "testUser";
+            testModerName = "testModer";
+
+            testId = 1;
             testNumber = 0;
             testNameForOrder = 000000;
         }
 
 
 
-        public void Create_Test_Category() // Создать тестовую категорию / Create test category
+        [Test]
+        public void AddingNewCategory_Check() // Тест добавления новой категории
+                                              // Test for adding a new category
         {
             using (TestDataContext data = new TestDataContext())
             {
-                testCategory = new Category { Name = testName };
-                data.Categories.Add(testCategory);
-                data.SaveChanges();
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+
+                if (data.Categories.Any(c => c.Id == testId && c.Name == testCategoryName))
+                {
+                    checking = true;
+                }
             }
+
+            Assert.AreEqual(true, checking);
         }
 
-        public void Create_Test_Product() // Создать тестовый товара / Create a test product
+        [Test]
+        public void RenameCategory_Check() // Тест переименования категории
+                                           // Category rename test
         {
             using (TestDataContext data = new TestDataContext())
             {
-                Create_Test_Category();
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsAdmin.RenameCategory_Back(testCategoryName, testNameNew);
 
-                testProduct = new Product { Name = testName, ProductCategory = testCategory, Price = testNumber };
-                data.Warehouse.Add(testProduct);
-                testCategory.Products.Add(testProduct);
-                data.SaveChanges();
+                if (data.Categories.Any(c => c.Id == testId && c.Name == testNameNew))
+                {
+                    checking = true;
+                }
             }
+            Assert.AreEqual(true, checking);
         }
 
-        public void Create_Test_Order() // Создать тестовый заказ / Create a test order
+        [Test]
+        public void RemoveCategory_Check() // Тест удаления категории
+                                           // Category removing test
         {
             using (TestDataContext data = new TestDataContext())
             {
-                testOrder = new Order { OrderNum = testNameForOrder };
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+
+                testCategory = data.Categories
+                            .Include(c => c.Products)
+                            .FirstOrDefault(c => c.Name == testCategoryName);
+
+                toolsAdmin.RemoveCategory_Back(testCategory);
+
+
+                if (!data.Categories.Any(c => c.Id == testId && c.Name == testCategoryName))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+
+        [Test]
+        public void AddNewProduct_Check() // Тест добавления нового товара
+                                          // Test of adding a new product
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsAdmin.AddNewProduct_Back(testNumber, testProductName, ref testCategoryName, testNumber, 0);
+                toolsAdmin.AddNewProduct_Back(testNumber, testProductName, ref testCategoryName, testNumber, 1);
+
+                if (data.Warehouse.Any(p => p.Id == testId && p.Name == testProductName))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+        [Test]
+        public void EditProduct_Check() // Тест редактирования товара
+                                        // Product edit test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsAdmin.AddNewProduct_Back(testNumber, testProductName, ref testCategoryName, testNumber, 1);
+                toolsAdmin.EditProduct_Back(testNumber, ref testProduct);
+
+                if (data.Warehouse.Any(p => p.Id == testId && p.Name == testProductName))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+        [Test]
+        public void EditProductRename_Check() // Тест переименования товара
+                                              // Product rename test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsAdmin.AddNewProduct_Back(testNumber, testProductName, ref testCategoryName, testNumber, 1);
+                toolsAdmin.EditProductRename_Back(testProductName, testNameNew);
+
+                if (data.Warehouse.Any(p => p.Id == testId && p.Name == testNameNew))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+        [Test]
+        public void EditProductCategory_Check() // Тест изменения категории товара
+                                                // Product category change test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsAdmin.AddNewCategory_Back(testNameNew);
+                toolsAdmin.AddNewProduct_Back(testNumber, testProductName, ref testCategoryName, testNumber, 1);
+
+                testProduct = data.Warehouse
+                            .Include(p => p.ProductCategory)
+                            .FirstOrDefault(p => p.Id == testId);
+
+                toolsAdmin.EditProductCategory_Back(testId, testProduct, ref testCategory);
+
+
+                if (data.Warehouse.Any(p => p.Id == testId && p.ProductCategory == testCategory))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+        [Test]
+        public void EditProductPrice_Check() // Тест изменения цены товара
+                                             // Product price change test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsAdmin.AddNewProduct_Back(testNumber, testProductName, ref testCategoryName, testNumber, 1);
+
+                testProduct = data.Warehouse
+                            .Include(p => p.ProductCategory)
+                            .FirstOrDefault(p => p.Id == testId);
+
+                toolsAdmin.EditProductPrice_Back(testProduct, testNumber + 1);
+
+
+                if (data.Warehouse.Any(p => p.Id == testId && p.Price == testNumber + 1))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+        [Test]
+        public void RemoveProduct_Check() // Тест удаления товара
+                                          // Product removing test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsAdmin.AddNewProduct_Back(testNumber, testProductName, ref testCategoryName, testNumber, 1);
+                toolsAdmin.RemoveProduct_Back(testNumber, ref testProduct);
+
+                if (!data.Warehouse.Any(p => p.Id == testId && p == testProduct))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void OrdersView_Check() // Тест просмотра заказа
+                                       // Order view test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                testUser = new Customer { Login = testUserName, Password = testNameNew };
+                testOrder = new Order { OrderNum = testNameForOrder, User = testUser };
+
                 data.Orders.Add(testOrder);
                 data.SaveChanges();
+
+                toolsAdmin.OrdersView_Back(testNumber, ref testOrder);
+
+
+                if (data.Orders.Any(o => o.Id == testId && o == testOrder))
+                {
+                    checking = true;
+                }
             }
+
+            Assert.AreEqual(true, checking);
         }
 
-        public void Create_Test_Customer() // Создать тестового пользователя / Create a test user
+        [Test]
+        public void OrderRemove_Check() // Тест удаления заказа
+                                        // Order removing test
         {
             using (TestDataContext data = new TestDataContext())
             {
-                testCustomer = new Customer { Login = testName, Password = testName };
-                data.Users.Add(testCustomer);
+                testUser = new Customer { Login = testUserName, Password = testPassword };
+                testOrder = new Order { OrderNum = testNameForOrder, User = testUser };
+
+                data.Users.Add(testUser);
+                data.Orders.Add(testOrder);
                 data.SaveChanges();
+
+                toolsAdmin.OrderRemove_Back(testNumber, ref testOrder);
+
+
+                if (!data.Orders.Any(o => o.Id == testId && o == testOrder))
+                {
+                    checking = true;
+                }
             }
+
+            Assert.AreEqual(true, checking);
         }
 
-        public void Create_Test_Moder() // Создать тестового модератора / Create a test moder
+
+        [Test]
+        public void UserRemove_Check() // Тест удаления пользователя
+                                       // User removing test
         {
             using (TestDataContext data = new TestDataContext())
             {
-                testModer = new Moderator { Login = testName, Password = testName, SpecialKey = "01" };
+                testUser = new Customer { Login = testUserName, Password = testPassword };
+                
+                data.Users.Add(testUser);
+                data.SaveChanges();
+
+                toolsAdmin.UserRemove_Back(testNumber, ref testUser);
+
+
+                if (!data.Users.Any(u => u.Id == testId && u == testUser))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void AddModer_Check() // Тест добавления модератора
+                                     // Add moderator test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                testModer = new Moderator { Login = testModerName, Password = testPassword };
+
                 data.Moders.Add(testModer);
                 data.SaveChanges();
-            }
-        }
 
+                toolsAdmin.AddModer_Back(testModerName, testPassword, 1);
 
 
-        [Test]
-        public void AddingNewCategory_Check() // Тест добавления новой категории / Test for adding a new category
-        {
-            checking = false;
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                if (!data.Categories.Any(p => p.Name == testName))
-                {
-                    Create_Test_Category();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.SaveChanges();
-                data.Categories.RemoveRange(data.Categories);
-            }
-
-            Assert.AreEqual(true, checking);
-        }      
-
-        [Test]
-        public void RenameCategory_Check() // Тест переименования категории / Category rename test
-        {
-            checking = false;
-            Create_Test_Category();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                if (!data.Categories.Any(p => p.Name == testNameNew))
-                {
-                    data.Categories.Include(p => p.Products).FirstOrDefault(p => p.Name == testName).Name = testNameNew;
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.SaveChanges();
-                data.Categories.RemoveRange(data.Categories);
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void RemoveCategory_Check() // Тест удаления категории / Category removing test
-        {
-            checking = false;
-            Create_Test_Category();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                foreach (Product product in testCategory.Products)
-                {
-                    product.ProductCategory = null;
-                }
-
-                testCategory.Products.Clear();
-                data.Categories.RemoveRange(data.Categories);
-                data.SaveChanges();
-
-                checking = true;
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void AddNewProduct_Check() // Тест добавления нового товара / Test of adding a new product
-        {
-            checking = false;
-            Create_Test_Product();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var categories = data.Categories.Include(c => c.Products).ToList();
-
-                if (data.Categories.Any(c => c.Id == categories[testNumber].Id))
-                {
-                    string nullName = data.Categories.FirstOrDefault(c => c.Id == categories[testNumber].Id).Name;
-                }
-
-                data.Warehouse.RemoveRange(data.Warehouse);
-                data.Categories.RemoveRange(data.Categories);
-                data.SaveChanges();
-                checking = true;
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void EditProduct_Check() // Тест редактирования товара / Product edit test
-        {
-            checking = false;
-            Create_Test_Product();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                if (data.Warehouse.Any(p => p.Id == testNumber))
-                {
-                    testProduct = data.Warehouse.Include(p => p.ProductCategory)
-                        .FirstOrDefault(p => p.Id == testNumber);
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void EditProductRename_Check() // Тест переименования товара / Product rename test
-        {
-            checking = false;
-            Create_Test_Product();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                if (!data.Warehouse.Any(p => p.Name == testNameNew))
-                {
-                    data.Warehouse.FirstOrDefault(p => p.Name == testName).Name = testNameNew;
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void EditProductCategory_Check() // Тест изменения категории товара / Product category change test
-        {
-            checking = false;
-            Create_Test_Product();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var categories = data.Categories.Include(c => c.Products).ToList();
-
-                if (data.Categories.Any(c => c.Id == categories[testNumber].Id))
-                {
-                    testCategory = data.Categories.Include(c => c.Products).FirstOrDefault(c => c.Id == categories[testNumber].Id);
-                    data.Warehouse.Include(p => p.ProductCategory).FirstOrDefault(p => p.ProductCategory.Name == testName).ProductCategory = testCategory;
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void EditProductPrice_Check() // Тест изменения цены товара / Product price change test
-        {
-            checking = false;
-            Create_Test_Product();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                data.Warehouse.FirstOrDefault(p => p.Name == testProduct.Name).Price = testNumber;
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.Pass();
-        }
-
-        [Test]
-        public void RemoveProduct_Check() // Тест удаления товара / Product removing test
-        {
-            checking = false;
-            Create_Test_Product();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var products = data.Warehouse.Include(p => p.ProductCategory).ToList();
-
-                if (data.Warehouse.Any(p => p.Id == products[testNumber].Id))
-                {
-                    testProduct = products[testNumber];
-                    testCategory = testProduct.ProductCategory;
-
-                    testCategory.Products.Remove(testProduct);
-                    data.Warehouse.Remove(testProduct);
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void OrdersView_Check() // Тест просмотра заказа / Order view test
-        {
-            checking = false;
-            Create_Test_Order();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var orders = data.Orders.Include(o => o.OrderProducts).Include(o => o.User).ToList();
-
-                if (data.Orders.Any(o => o.Id == orders[testNumber].Id))
-                {
-                    testOrder = orders[testNumber];
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void OrderRemove_Check() // Тест удаления заказа / Order removing test
-        {
-            checking = false;
-            Create_Test_Order();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var orders = data.Orders.Include(o => o.OrderProducts).Include(o => o.User).ToList();
-
-                if (data.Orders.Any(o => o.Id == orders[testNumber].Id))
-                {
-                    testOrder = orders[testNumber];
-                    testOrder.User.Orders.Remove(testOrder);
-
-                    data.Orders.Remove(testOrder);
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void UserRemove_Check() // Тест удаления пользователя / User removing test
-        {
-            checking = false;
-            Create_Test_Customer();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var customers = data.Users.Include(u => u.Basket).Include(u => u.Orders).ToList();
-
-                if (data.Users.Any(u => u.Id == customers[testNumber].Id))
-                {
-                    testCustomer = data.Users.Include(u => u.Basket).Include(u => u.Orders).FirstOrDefault(u => u.Id == customers[testNumber].Id);
-
-                    for (int i = 0; i < testCustomer.Orders.Count; i++)
-                    {
-                        data.Orders.Remove(testCustomer.Orders[i]);
-                    }
-
-                    testCustomer.Orders.Clear();
-                    testCustomer.Basket.Clear();
-                    data.Users.Remove(testCustomer);
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void AddModer_Check() // Тест добавления модератора / Add moderator test
-        {
-            checking = false;
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                if (!data.Moders.Any(m => m.Login == testName))
-                {
-                    Create_Test_Moder();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void ModerRemove_Check() // Тест удаления модератора / Moderator removing test
-        {
-            checking = false;
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var moders = data.Moders.Where(m => m.Login != "Peygy").ToList();
-
-                if (data.Moders.Any(m => m.Id == moders[testNumber].Id))
-                {
-                    testModer = moders[testNumber];
-                    data.Moders.Remove(data.Moders.FirstOrDefault(m => m.Id == moders[testNumber].Id));
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void AddAdmin_Check() // Тест добавления админа / Admin add test
-        {
-            checking = false;
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                if (!data.Moders.Any(m => m.Login == testName))
-                {
-                    Admin testAdmin = new Admin { Login = testName, Password = testName, SpecialKey = "011" };
-                    data.Moders.Add(testAdmin);
-                    data.SaveChanges();
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void ViewAllModers_Check() // Тест посмотра всех модераторов / Test viewing of all moderators
-        {
-            checking = false;
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var moderators = data.Moders.Where(m => m.Login != "Peygy").ToList();
-
-                for (int i = 0; i < moderators.Count; i++)
+                if (data.Moders.Any(m => m.Id == testId && m.Login == testModerName))
                 {
                     checking = true;
-                }               
+                }
+            }
 
-                data.RemoveRange(data);
+            Assert.AreEqual(true, checking);
+        }
+
+        [Test]
+        public void ModerRemove_Check() // Тест удаления модератора
+                                        // Moderator removing test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                testModer = new Moderator { Login = testModerName, Password = testPassword };
+                
+                data.Moders.Add(testModer);
                 data.SaveChanges();
+
+                toolsAdmin.ModerRemove_Back(testNumber, ref testModer);
+
+
+                if (!data.Moders.Any(m => m.Id == testId && m == testModer))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void AddAdmin_Check() // Тест добавления админа
+                                     // Admin add test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                toolsAdmin.AddAdmin_Back(testModerName, testPassword, 1);
+
+                if (data.Moders.Any(a => a.Id == testId && a.Login == testModerName))
+                {
+                    checking = true;
+                }
             }
 
             Assert.AreEqual(true, checking);
         }
     }
-    */
 }

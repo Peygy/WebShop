@@ -4,7 +4,8 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class AdminFrontTools // Класс управления администрации / Administration control class
+    class AdminFrontTools // Класс управления администрации
+                          // Administration control class
     {
         OutputModelsFront output = new OutputModelsFront();
         ModerFrontTools moderAct = new ModerFrontTools();
@@ -17,7 +18,8 @@ namespace WebShopApp
         Moderator moder;
 
 
-        public void CategorySetUp() // Добавление новой или настройка существующей категории / Adding new or customizing an existing category
+        public void CategorySetUp() // Добавление новой или настройка существующей категории
+                                    // Adding new or customizing an existing category
         {
             output.ViewAllCategories();
 
@@ -46,7 +48,8 @@ namespace WebShopApp
             }
         }
 
-        public void AddNewCategory() // Добавить новую категорию / Add new category
+        public void AddNewCategory() // Добавить новую категорию
+                                     // Add new category
         {
             bool exit = false;
 
@@ -80,9 +83,16 @@ namespace WebShopApp
             }
         }
 
-        public void EditCategory() // Редактировать категорию / Edit category
+        public void EditCategory() // Редактировать категорию
+                                   // Edit category
         {
-            moderAct.EditCategory(ref category);
+            int key = 0;
+            moderAct.EditCategory(ref category, ref key);
+
+            if(key == 1)
+            {
+                return;
+            }
 
             Console.WriteLine();
             Console.WriteLine();
@@ -96,13 +106,15 @@ namespace WebShopApp
                 case "1":
                     {
                         Console.Clear();
-                        moderAct.AddProductIntoCategory(category); // Из инструментов модератора / From moderator tools
+                        moderAct.AddProductIntoCategory(category); // Из инструментов модератора
+                                                                   // From moderator tools
                         break;
                     }
                 case "2":
                     {
                         Console.Clear();
-                        moderAct.RemoveProductFromCategory(category); // Из инструментов модератора / From moderator tools
+                        moderAct.RemoveProductFromCategory(category); // Из инструментов модератора
+                                                                      // From moderator tools
                         break;
                     }
                 case "3":
@@ -124,7 +136,8 @@ namespace WebShopApp
             }
         }
 
-        public void RenameCategory(Category category) // Переименовать категорию / Rename category
+        public void RenameCategory(Category category) // Переименовать категорию
+                                                      // Rename category
         {
             bool exit = false;
             string categoryNameOld = category.Name;
@@ -165,7 +178,8 @@ namespace WebShopApp
             Console.ReadLine();
         }
 
-        public void RemoveCategory(Category category) // Удалить категорию / Remove category
+        public void RemoveCategory(Category category) // Удалить категорию
+                                                      // Remove category
         {
             Console.WriteLine();
             Console.WriteLine($"Вы точно хотите удалить категорию '{category.Name}'?");
@@ -187,7 +201,8 @@ namespace WebShopApp
 
 
 
-        public void ProductSetUp() // Добавить, редактировать или удалить товар / Add, edit or remove a product
+        public void ProductSetUp() // Добавить, редактировать или удалить товар
+                                   // Add, edit or remove a product
         {
             output.ViewAllProducts();
 
@@ -223,7 +238,8 @@ namespace WebShopApp
             }
         }
 
-        public void AddNewProduct() // Добавить новый товар / Add new product
+        public void AddNewProduct() // Добавить новый товар
+                                    // Add new product
         {
             bool exit = false;
             bool categoryCheck = false;
@@ -274,7 +290,7 @@ namespace WebShopApp
                 Console.WriteLine();
                 Console.WriteLine($"Название товара: {productName}");
                 Console.WriteLine($"Категория товара: {productCategoryName}");
-                Console.WriteLine($"Цена товара: {productPrice} ₽");
+                Console.WriteLine($"Цена товара: {productPrice} Руб.");
                 Console.WriteLine();
                 Console.WriteLine();
                 Console.WriteLine("1. Подтвердить");
@@ -297,7 +313,8 @@ namespace WebShopApp
             }
         }
 
-        public void EditProduct() // Редактировать товар / Edit product
+        public void EditProduct() // Редактировать товар
+                                  // Edit product
         {
             bool exit = false;
 
@@ -309,6 +326,7 @@ namespace WebShopApp
                 Console.Write("Выберите товар для редактирования: ");
                 string editProduct = Console.ReadLine();
                 int.TryParse(editProduct, out int choice);
+                choice -= 1;
 
                 if (editProduct == "menu")
                 {
@@ -317,6 +335,7 @@ namespace WebShopApp
 
                 if (adminAct.EditProduct_Back(choice, ref product))
                 {
+                    Console.Clear();
                     product.ProductInfo();
                     exit = true;
                 }
@@ -361,7 +380,8 @@ namespace WebShopApp
             }
         }
 
-        public void EditProductRename(Product product) // Переименовать товар / Rename product
+        public void EditProductRename(Product product) // Переименовать товар
+                                                       // Rename product
         {
             bool exit = false;
             string productNameOld = product.Name;
@@ -402,7 +422,8 @@ namespace WebShopApp
             Console.ReadLine();
         }
 
-        public void EditProductCategory(Product product) // Поменять категорию товара / Change product category
+        public void EditProductCategory(Product product) // Поменять категорию товара
+                                                         // Change product category
         {
             bool exit = false;
             category = product.ProductCategory;
@@ -447,7 +468,8 @@ namespace WebShopApp
             Console.ReadLine();
         }
 
-        public void EditProductPrice(Product product) // Поменять цену товара / Change product price
+        public void EditProductPrice(Product product) // Поменять цену товара
+                                                      // Change product price
         {
             bool exit = false;
             int productPriceOld = product.Price;
@@ -456,7 +478,7 @@ namespace WebShopApp
             while (!exit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"Текущая цена товара: {productPriceOld} ₽");
+                Console.WriteLine($"Текущая цена товара: {productPriceOld} Руб.");
                 Console.WriteLine();
                 Console.Write("Введите новую цену товара: ");
                 string priceNew = Console.ReadLine();
@@ -483,13 +505,14 @@ namespace WebShopApp
 
             Console.Clear();
             Console.WriteLine();
-            Console.WriteLine($"Старая цена товара: {productPriceOld} ₽");
+            Console.WriteLine($"Старая цена товара: {productPriceOld} Руб.");
             Console.WriteLine();
-            Console.WriteLine($"Новая цена товара: {productPriceNew} ₽");
+            Console.WriteLine($"Новая цена товара: {productPriceNew} Руб.");
             Console.ReadLine();
         }
 
-        public void RemoveProduct() // Удалить товар / Remove product
+        public void RemoveProduct() // Удалить товар
+                                    // Remove product
         {
             bool exit = false;
 
@@ -529,7 +552,8 @@ namespace WebShopApp
 
 
 
-        public void OrdersSetUp() // Настройка заказов / Setting up orders
+        public void OrdersSetUp() // Настройка заказов
+                                  // Setting up orders
         {
             output.ViewAllOrders();
 
@@ -558,7 +582,8 @@ namespace WebShopApp
             }
         }
 
-        public void OrdersView() // Просмотр заказа / View order
+        public void OrdersView() // Просмотр заказа
+                                 // View order
         {
             bool exit = false;
 
@@ -590,7 +615,7 @@ namespace WebShopApp
                     for (int i = 0; i < order.OrderProducts.Count; i++)
                     {
                         Console.WriteLine($"Название: {order.OrderProducts[i].Name} => " +
-                            $"Цена: {order.OrderProducts[i].Price} ₽");
+                            $"Цена: {order.OrderProducts[i].Price} Руб.");
                     }
 
                     Console.ReadLine();
@@ -607,7 +632,8 @@ namespace WebShopApp
             }           
         }
 
-        public void OrderRemove() // Удалить заказ / Remove order
+        public void OrderRemove() // Удалить заказ
+                                  // Remove order
         {
             bool exit = false;
 
@@ -647,7 +673,8 @@ namespace WebShopApp
 
 
 
-        public void UsersSetUp() // Настройка пользователей / Setting up users
+        public void UsersSetUp() // Настройка пользователей
+                                 // Setting up users
         {
             output.ViewAllUsers();
 
@@ -669,7 +696,8 @@ namespace WebShopApp
             }
         }
 
-        public void UserRemove() // Удалить пользователя / Remove user
+        public void UserRemove() // Удалить пользователя
+                                 // Remove user
         {
             bool exit = false;
 
@@ -710,7 +738,8 @@ namespace WebShopApp
 
 
 
-        public void ModersSetUp() // Настройка модераторов / Setting up moders
+        public void ModersSetUp() // Настройка модераторов
+                                  // Setting up moders
         {
             output.ViewAllModers();
 
@@ -739,7 +768,8 @@ namespace WebShopApp
             }
         }
 
-        public void AddModer() // Добавить модератора / Add moder
+        public void AddModer() // Добавить модератора
+                               // Add moder
         {
             bool exit = false;
 
@@ -794,7 +824,8 @@ namespace WebShopApp
             }
         }
 
-        public void ModerRemove() // Удалить модератора / Remove moder
+        public void ModerRemove() // Удалить модератора
+                                  // Remove moder
         {
             bool exit = false;
 
@@ -835,7 +866,8 @@ namespace WebShopApp
 
 
 
-        public void AddAdmin() // Добавить админа / Add admin
+        public void AddAdmin() // Добавить админа
+                               // Add admin
         {
             bool exit = false;
 

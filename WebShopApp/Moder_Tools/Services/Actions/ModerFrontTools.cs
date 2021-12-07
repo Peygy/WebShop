@@ -4,7 +4,8 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class ModerFrontTools // Класс управления модерации / Moderation control class
+    class ModerFrontTools // Класс управления модерации
+                          // Moderation control class
     {
         ModerBackTools moderAct = new ModerBackTools();
         OutputModelsFront output = new OutputModelsFront();
@@ -13,7 +14,8 @@ namespace WebShopApp
         Product product;       
 
 
-        public void EditCategory(ref Category category) // Редактировать категорию / Edit category
+        public void EditCategory(ref Category category, ref int key) // Редактировать категорию
+                                                                     // Edit category
         {
             bool exit = false;
 
@@ -29,10 +31,12 @@ namespace WebShopApp
 
                 if (choice == "menu")
                 {
+                    key = 1;
                     return;
                 }
 
-                if (moderAct.EditCategory_Back(categoryChoice, ref category)) // Из инструментов модератора / From moderator tools
+                if (moderAct.EditCategory_Back(categoryChoice, ref category)) // Из инструментов модератора
+                                                                              // From moderator tools
                 {
                     Console.Clear();
                     Console.WriteLine();
@@ -58,9 +62,16 @@ namespace WebShopApp
             }
         }
 
-        public void EditCategory_Menu() // Меню выбора редактирования категории / Category edit selection menu
+        public void EditCategory_Menu() // Меню выбора редактирования категории
+                                        // Category edit selection menu
         {
-            EditCategory(ref category);
+            int key = 0;
+            EditCategory(ref category, ref key);
+
+            if (key == 1)
+            {
+                return;
+            }
 
             Console.WriteLine();
             Console.WriteLine();
@@ -88,7 +99,8 @@ namespace WebShopApp
             }
         }
 
-        public void AddProductIntoCategory(Category category) // Добавить продукт в категорию / Add product into category
+        public void AddProductIntoCategory(Category category) // Добавить продукт в категорию
+                                                              // Add product into category
         {
             bool exit = false;
 
@@ -130,7 +142,8 @@ namespace WebShopApp
             }
         }
 
-        public void RemoveProductFromCategory(Category category) // Удалить товар из категории / Remove product from category
+        public void RemoveProductFromCategory(Category category) // Удалить товар из категории
+                                                                 // Remove product from category
         {
             bool exit = false;
 
@@ -151,7 +164,6 @@ namespace WebShopApp
                 Console.Write("Введите товар для удаления: ");
                 string removeChoice = Console.ReadLine();
                 int.TryParse(Console.ReadLine(), out int choice);
-                choice -= 1;
 
                 if (removeChoice == "menu")
                 {

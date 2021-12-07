@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class ModerBackTools // Класс инструментов(реализации) модерации / Moderation tool(realization) class
+    public class ModerBackTools // Класс инструментов(реализации) модерации
+                                // Moderation tool(realization) class
     {     
-        public bool EditCategory_Back(int categoryChoice, ref Category category) // Редактирование категории / Editing category
+        public bool EditCategory_Back(int categoryChoice, ref Category category) // Редактирование категории
+                                                                                 // Editing category
         {
             try
             {
@@ -41,7 +43,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool AddProductIntoCategory_Back(int choice, Category category, ref Product product, int key) // Добавление товара в категорию / Adding product into category
+        public bool AddProductIntoCategory_Back(int choice, Category category, ref Product product, int key) // Добавление товара в категорию
+                                                                                                             // Adding product into category
         {
             try
             {
@@ -93,7 +96,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool RemoveProductFromCategory_Back(int choice, ref Product product, Category category) // Удаление товара из категории / Removing product from category
+        public bool RemoveProductFromCategory_Back(int choice, ref Product product, Category category) // Удаление товара из категории
+                                                                                                       // Removing product from category
         {
             try
             {
@@ -103,7 +107,7 @@ namespace WebShopApp
                         .Include(c => c.Products)
                         .FirstOrDefault(c => c == category);
 
-                    if (data.Warehouse.Any(p => p == category.Products[choice]))
+                    if (category.Products.Count >= choice)
                     {                       
                         product = data.Warehouse
                             .Include(p => p.ProductCategory)

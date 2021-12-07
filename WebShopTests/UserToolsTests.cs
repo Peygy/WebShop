@@ -1,21 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using NUnit.Framework;
 using System.Linq;
 using WebShopApp;
 
 namespace WebShopTests
 {
-    /*
+    
     [TestFixture]
-    class UserToolsTests // Тестирование инструментов для взаимодействия пользователя с магазином / Testing tools for user interaction with the store
+    class UserToolsTests // Тестирование инструментов для взаимодействия пользователя с магазином
+                         // Testing tools for user interaction with the store
     {
-        private bool checking;
+        UserBackTools toolsUser = new UserBackTools();
+        AdminBackTools toolsAdmin = new AdminBackTools();
 
         private Category testCategory;
         private Product testProduct;
         private Order testOrder;
-        private Customer testCustomer;
+        private Customer testUser;
 
-        private string testName;
+        private bool checking;
+        private string testPassword;
+        private string testCategoryName;
+        private string testProductName;
+        private string testUserName;
+        private int testId;
         private int testNumber;
         private int testNameForOrder;
 
@@ -23,204 +30,74 @@ namespace WebShopTests
         [SetUp]
         public void Setup() // Настройка тестов / Test setup
         {
-            testName = "test";
+            checking = false;
+
+            testPassword = "newPass";
+            testCategoryName = "testCategory";
+            testProductName = "testProduct";
+            testUserName = "testUser";
+
+            testId = 1;
             testNumber = 0;
             testNameForOrder = 000000;
         }
 
 
-        public void Create_Test_Category() // Создать тестовую категорию / Create test category
+
+        [Test]
+        public void CategoriesOutput_Check() // Тест вывода категории для покупки товаров
+                                             // Test of displaying category for purchasing products
         {
             using (TestDataContext data = new TestDataContext())
             {
-                testCategory = new Category { Name = testName };
-                data.Categories.Add(testCategory);
-                data.SaveChanges();
+                toolsAdmin.AddNewCategory_Back(testCategoryName);
+                toolsUser.CategoriesOutput_Back(testNumber, ref testCategory);
+
+                if (data.Categories.Any(c => c.Id == testId && c == testCategory))
+                {
+                    checking = true;
+                }
             }
+
+            Assert.AreEqual(true, checking);
         }
 
-        public void Create_Test_Product() // Создать тестовый продукт / Create a test product
+
+        [Test]
+        public void AddToBasket_Check() // Тест добавления товаров в корзину
+                                        // Test of adding products to basket
         {
             using (TestDataContext data = new TestDataContext())
             {
-                Create_Test_Category();
+                testUser = new Customer { Login = testUserName, Password = testPassword };
+                testProduct = new Product { Name = testProductName };
 
-                testProduct = new Product { Name = testName, ProductCategory = testCategory, Price = testNumber };
                 data.Warehouse.Add(testProduct);
-                testCategory.Products.Add(testProduct);
-                data.SaveChanges();
-            }
-        }
-
-        public void Create_Test_Order() // Создать тестовый заказ / Create test order
-        {
-            using (TestDataContext data = new TestDataContext())
-            {
-                testOrder = new Order { OrderNum = testNameForOrder };
-                data.Orders.Add(testOrder);
-                data.SaveChanges();
-            }
-        }
-
-        public void Create_Test_Customer() // Создать тестового пользователя / Create test user
-        {
-            using (TestDataContext data = new TestDataContext())
-            {
-                testCustomer = new Customer { Login = testName, Password = testName };
-                data.Users.Add(testCustomer);
-                data.SaveChanges();
-            }
-        }
-
-
-
-        [Test]
-        public void CategoriesOutput_Check() // Тест вывода категорий для покупки товаров /
-        {
-            checking = false;
-            Create_Test_Category();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                var categories = data.Categories.Include(c => c.Products).ToList();
-
-                if (categories.Any(c => c.Id == categories[testNumber].Id))
-                {
-                    testCategory = categories.FirstOrDefault(c => c.Id == categories[testNumber].Id);
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void AddToBasket_Check() // Тест добавления товаров в корзину /
-        {
-            checking = false;
-            Create_Test_Product();
-            Create_Test_Customer();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                testCustomer.Basket.Add(testProduct);
+                data.Users.Add(testUser);
                 data.SaveChanges();
 
-                checking = true;
+                toolsUser.AddToBasket_Back(testProduct, testUser);
 
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
 
-            Assert.AreEqual(true, checking);
-        }
-
-        [Test]
-        public void UserBasket_Check() // Тест действий с корзиной /
-        {
-            checking = false;
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                if (!data.Orders.Any(o => o.OrderNum == testNameForOrder))
+                if (data.Users.Any(u => u.Id == testId && u.Basket.Contains(testProduct)))
                 {
                     checking = true;
                 }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
             }
 
             Assert.AreEqual(true, checking);
         }
 
-
         [Test]
-        public void RegistrationOrder_Check() // Тест оформления заказа /
+        public void UserBasket_Check() // Тест проверки наличия заказа в базе данных
+                                       // Testing of checking the existance of an order in the database
         {
-            checking = false;
-            Create_Test_Customer();
-
             using (TestDataContext data = new TestDataContext())
             {
-                Order order = new Order { OrderNum = testNameForOrder, User = testCustomer, OrderProducts = testCustomer.Basket, Status = "На складе" };
-                data.Orders.Add(order);
-                testCustomer.Orders.Add(order);
-                testCustomer.Basket.Clear();
-                data.SaveChanges();
-
-                checking = true;
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void ProductRemoveFromBasket_Check() 
-        {
-            checking = false;
-            Create_Test_Product();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                Product product = data.Warehouse.FirstOrDefault(p => p.Id == testNumber);
-                testCustomer.Basket.Remove(product);
-                data.SaveChanges();
-
-                checking = true;
-
-                data.RemoveRange(data);
-                data.SaveChanges();
-            }
-
-            Assert.AreEqual(true, checking);
-        }
-
-
-        [Test]
-        public void OrdersInfo_Check()
-        {
-            checking = false;
-            Create_Test_Customer();
-            Create_Test_Order();
-
-            using (TestDataContext data = new TestDataContext())
-            {
-                for (int i = 0; i < testCustomer.Orders.Count; i++)
+                if(toolsUser.OrderExist_Back(testNameForOrder))
                 {
                     checking = true;
                 }
-
-                if (testNumber <= testCustomer.Orders.Count)
-                {
-                    testOrder = testCustomer.Orders[testNumber];
-
-                    checking = true;
-                }
-                else
-                {
-                    checking = false;
-                }
-
-                data.RemoveRange(data);
-                data.SaveChanges();
             }
 
             Assert.AreEqual(true, checking);
@@ -228,31 +105,116 @@ namespace WebShopTests
 
 
         [Test]
-        public void AccountRemove_Check()
+        public void RegistrationOrder_Check() // Тест оформления заказа
+                                              // Checkout test
         {
-            checking = false;
-            Create_Test_Customer();
+            using (TestDataContext data = new TestDataContext())
+            {
+                testUser = new Customer { Login = testUserName, Password = testPassword };
+
+                data.Users.Add(testUser);
+                data.SaveChanges();
+
+                toolsUser.RegistrationOrder_Back(testUser, testNameForOrder);
+
+
+                if (data.Orders.Any(o => o.Id == testId && o.OrderNum == testNameForOrder))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void ProductRemoveFromBasket_Check() // Тест удаления товара из корзины
+                                                    // Test for removing product from the basket
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                testUser = new Customer { Login = testUserName, Password = testPassword };
+                testProduct = new Product { Name = testProductName };
+
+                testUser.Basket.Add(testProduct);
+                data.Warehouse.Add(testProduct);
+                data.Users.Add(testUser);
+                data.SaveChanges();
+
+                toolsUser.ProductRemoveFromBasket_Back(testUser, ref testProduct, testId);
+
+
+                if (data.Users.Any(u => u.Id == testId && !u.Basket.Contains(testProduct)))
+                {
+                    checking = true;
+                }
+            }
+
+            Assert.AreEqual(true, checking);
+        }
+
+
+        [Test]
+        public void OrdersInfo_Check() // Тест вывода заказов и удаление заказа
+                                       // Test output of orders and remove an order
+        {
+            int count = 0;
 
             using (TestDataContext data = new TestDataContext())
             {
-                for (int i = 0; i < testCustomer.Orders.Count; i++)
+                testUser = new Customer { Login = testUserName, Password = testPassword };
+
+                data.Users.Add(testUser);
+                data.SaveChanges();
+
+                if(toolsUser.OrdersInfo_Back(ref testUser, testNumber, ref testOrder, 0))
                 {
-                    data.Orders.Remove(testCustomer.Orders[i]);
+                    count += 1;
                 }
 
-                testCustomer.Orders.Clear();
-                testCustomer.Basket.Clear();
-                data.Users.Remove(testCustomer);
-                data.SaveChanges();
 
-                checking = true;
+                toolsUser.RegistrationOrder_Back(testUser, testNameForOrder);
+                
+                if(toolsUser.OrdersInfo_Back(ref testUser, testNumber, ref testOrder, 1))
+                {
+                    count += 1;
+                }
 
-                data.RemoveRange(data);
+                toolsUser.OrdersInfo_Back(ref testUser, testNumber, ref testOrder, 2);
+
+
+                if (!data.Orders.Any(o => o.Id == testId && o == testOrder))
+                {
+                    count += 1;
+                }
+            }
+
+            Assert.AreEqual(3, count);
+        }
+
+
+        [Test]
+        public void AccountRemove_Check() // Тест удаления аккаунта
+                                          // Account removing test
+        {
+            using (TestDataContext data = new TestDataContext())
+            {
+                testUser = new Customer { Login = testUserName, Password = testPassword };
+
+                data.Users.Add(testUser);
                 data.SaveChanges();
+                toolsUser.RegistrationOrder_Back(testUser, testNameForOrder);
+
+                toolsUser.AccountRemove_Back(testUser);
+
+                if (!data.Users.Any(u => u.Id == testId && u == testUser))
+                {
+                    checking = true;
+                }
             }
 
             Assert.AreEqual(true, checking);
         }
     }
-    */
 }

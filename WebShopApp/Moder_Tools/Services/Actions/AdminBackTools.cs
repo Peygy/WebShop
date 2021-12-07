@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    public class AdminBackTools // Класс инструментов(реализации) модерации для админов / Admin moderation tools(realization) class
+    public class AdminBackTools // Класс инструментов(реализации) модерации для админов
+                                // Admin moderation tools(realization) class
     {
-        public bool AddNewCategory_Back(string categoryName) // Добавление новой категории / Adding new category
+        public bool AddNewCategory_Back(string categoryName) // Добавление новой категории
+                                                             // Adding new category
         {
             try
             {
@@ -37,7 +39,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool RenameCategory_Back(string oldName, string newName) // Переименование категории / Renaming category
+        public bool RenameCategory_Back(string oldName, string newName) // Переименование категории
+                                                                        // Renaming category
         {
             try
             {
@@ -70,7 +73,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool RemoveCategory_Back(Category category) // Удаление категории / Removing category
+        public bool RemoveCategory_Back(Category category) // Удаление категории
+                                                           // Removing category
         {
             try
             {
@@ -103,7 +107,9 @@ namespace WebShopApp
 
 
 
-        public bool AddNewProduct_Back(int categoryChoice, string productName, ref string productCategoryName, int productPrice, int key) // Добавление нового товара / Adding new product
+        public bool AddNewProduct_Back
+            (int categoryChoice, string productName, ref string productCategoryName, int productPrice, int key) // Добавление нового товара
+                                                                                                                // Adding new product
         {
             try
             {
@@ -152,17 +158,23 @@ namespace WebShopApp
             return false;
         }
 
-        public bool EditProduct_Back(int choice, ref Product product) // Редактирование товара / Editing product
+        public bool EditProduct_Back(int choice, ref Product product) // Редактирование товара
+                                                                      // Editing product
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
-                {                   
-                    if (data.Warehouse.Any(p => p.Id == choice))
+                {
+                    var products = data.Warehouse
+                        .Include(p => p.Customers)
+                        .Include(p => p.Orders).ToList();
+
+                    if (data.Warehouse.Any(p => p == products[choice]))
                     {
                         product = data.Warehouse
-                            .Include(p => p.ProductCategory)
-                            .FirstOrDefault(p => p.Id == choice);                        
+                            .Include(p => p.Customers)
+                            .Include(p => p.Orders)
+                            .FirstOrDefault(p => p == products[choice]);                        
 
                         return true;
                     }
@@ -182,7 +194,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool EditProductRename_Back(string oldName, string newName) // Переименование товара / Renaming product
+        public bool EditProductRename_Back(string oldName, string newName) // Переименование товара
+                                                                           // Renaming product
         {
             try
             {
@@ -213,7 +226,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool EditProductCategory_Back(int newCategId, Product product, ref Category category) // Изменение категории товара / Changing product category
+        public bool EditProductCategory_Back(int newCategId, Product product, ref Category category) // Изменение категории товара
+                                                                                                     // Changing product category
         {
             try
             {
@@ -253,7 +267,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool EditProductPrice_Back(Product product, int productPriceNew) // Изменение цены товара / Changing product price
+        public bool EditProductPrice_Back(Product product, int productPriceNew) // Изменение цены товара
+                                                                                // Changing product price
         {
             try
             {
@@ -278,7 +293,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool RemoveProduct_Back(int productChoice, ref Product product) // Удаление товара / Removing product
+        public bool RemoveProduct_Back(int productChoice, ref Product product) // Удаление товара
+                                                                               // Removing product
         {
             try
             {
@@ -313,7 +329,8 @@ namespace WebShopApp
 
 
 
-        public bool OrdersView_Back(int orderNumber, ref Order order) // Просмотр заказа / Viewing order
+        public bool OrdersView_Back(int orderNumber, ref Order order) // Просмотр заказа
+                                                                      // Viewing order
         {
             try
             {
@@ -345,7 +362,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool OrderRemove_Back(int orderId, ref Order order) // Удаление заказа / Removing order
+        public bool OrderRemove_Back(int orderId, ref Order order) // Удаление заказа
+                                                                   // Removing order
         {
             try
             {
@@ -389,7 +407,8 @@ namespace WebShopApp
 
 
 
-        public bool UserRemove_Back(int userId, ref Customer customer) // Удаление пользователя / Removing user
+        public bool UserRemove_Back(int userId, ref Customer customer) // Удаление пользователя
+                                                                       // Removing user
         {
             try
             {
@@ -434,13 +453,14 @@ namespace WebShopApp
 
 
 
-        public bool AddModer_Back(string moderLogin, string moderPassword, int key) // Добавление модератора / Adding moder
+        public bool AddModer_Back(string moderLogin, string moderPassword, int key) // Добавление модератора
+                                                                                    // Adding moder
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (!data.Moders.Any(m => m.Login == moderLogin))
+                    if (!data.Moders.Any(m => m.Login == moderLogin && m.Password == moderPassword))
                     {
                         if(key == 0) // 'moder' emptyCheck
                         {
@@ -471,7 +491,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool ModerRemove_Back(int moderId, ref Moderator moder) // Удаление модератора / Removing moder
+        public bool ModerRemove_Back(int moderId, ref Moderator moder) // Удаление модератора
+                                                                       // Removing moder
         {
             try
             {
@@ -509,13 +530,14 @@ namespace WebShopApp
 
 
 
-        public bool AddAdmin_Back(string adminLogin, string adminPassword, int key) // Добавление админа / Adding admin
+        public bool AddAdmin_Back(string adminLogin, string adminPassword, int key) // Добавление админа
+                                                                                    // Adding admin
         {
             try
             {
                 using (AdminDataContext data = new AdminDataContext())
                 {
-                    if (!data.Moders.Any(m => m.Login == adminLogin))
+                    if (!data.Moders.Any(a => a.Login == adminLogin && a.Password == adminPassword))
                     {
                         if (key == 0) // 'admin' emptyCheck
                         {
@@ -523,8 +545,8 @@ namespace WebShopApp
                         }
                         else // 'admin' AdminAdding
                         {
-                            Admin moderator = new Admin { Login = adminLogin, Password = adminPassword, SpecialKey = "011" };
-                            data.Moders.Add(moderator);
+                            Admin admin = new Admin { Login = adminLogin, Password = adminPassword, SpecialKey = "011" };
+                            data.Moders.Add(admin);
                             data.SaveChanges();
 
                             return true;

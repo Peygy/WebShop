@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class OutputModelsBack
+    public class OutputModelsBack // Класс выборки моделей из базы данных
+                                  // Class for fetching models from the database
     {
-        public bool ViewAllCategories_Back() // Вывод всех категорий / Output all categories
+        public bool ViewAllCategories_Back() // Выборка всех категорий
+                                             // Output all categories
         {
             try
             {
@@ -17,9 +19,9 @@ namespace WebShopApp
                     var categories = data.Categories
                         .Include(c => c.Products).ToList();
 
-                    foreach (Category category in categories)
+                    for (int i = 0; i < categories.Count; i++)
                     {
-                        Console.WriteLine($"{category.Id}. {category.Name}");
+                        Console.WriteLine($"{i + 1}. {categories[i].Name}");
                     }
 
                     return true;
@@ -35,7 +37,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool ViewAllProducts_Back() // Вывод всех продутков / Output all products
+        public bool ViewAllProducts_Back() // Выборка всех продутков
+                                           // Output all products
         {
             try
             {
@@ -47,11 +50,11 @@ namespace WebShopApp
                     for (int i = 0; i < products.Count; i++)
                     {
                         string category = products[i].ProductCategory == 
-                            null ? "Пусто" : $"{products[i].ProductCategory.Name}";
+                            null ? "Отсутствует" : $"{products[i].ProductCategory.Name}";
 
                         Console.WriteLine($"{i + 1}. {products[i].Name} => " +
                             $"Категория: {category}, " +
-                            $"Цена: {products[i].Price} ₽");
+                            $"Цена: {products[i].Price} Руб.");
                     }
 
                     return true;
@@ -67,7 +70,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool ViewAllOrders_Back() // Вывод всех заказов / Output all orders
+        public bool ViewAllOrders_Back() // Выборка всех заказов
+                                         // Output all orders
         {
             try
             {
@@ -96,7 +100,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool ViewAllUsers_Back() // Вывод всех пользователей / Output all users
+        public bool ViewAllUsers_Back() // Выборка всех пользователей
+                                        // Output all users
         {
             try
             {
@@ -126,7 +131,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool ViewAllModers_Back() // Посмотреть всех модераторов / View all moderators
+        public bool ViewAllModers_Back() // Выборка всех модераторов
+                                         // View all moderators
         {
             try
             {

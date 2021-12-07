@@ -4,7 +4,8 @@ using System.Text;
 
 namespace WebShopApp
 {
-    public class Product // Класс Товара / Product class
+    public class Product // Класс Товара
+                         // Product class
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,17 +17,13 @@ namespace WebShopApp
 
         public void ProductInfo() // Информация товара / Product information
         {
+            string category = ProductCategory == 
+                null ? "Отсутствует" : $"{ProductCategory.Name}";
+
             Console.WriteLine();
             Console.WriteLine($"Название товара: {Name}");
-            if (ProductCategory.Name == null)
-            {
-                Console.WriteLine("Категории нет");
-            }
-            else
-            {
-                Console.WriteLine($"Категория: {ProductCategory.Name}");
-            }
-            Console.WriteLine($"Цена: {Price} ₽");
+            Console.WriteLine($"Категория товара: {category}");
+            Console.WriteLine($"Цена: {Price} Руб.");
             Console.WriteLine();
             Console.WriteLine();
         }

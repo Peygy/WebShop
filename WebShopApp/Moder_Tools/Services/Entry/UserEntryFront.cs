@@ -4,11 +4,13 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class UserEntryFront // Авторизация и Регистрация / Authorization and Registration
+    class UserEntryFront // Авторизация и Регистрация
+                         // Authorization and Registration
     {
         UserEntryBack entryBack = new UserEntryBack();
 
-        public void SingIn(ref Customer user) // Вход в аккаунт / Login to your account
+        public void SingIn(ref Customer user) // Вход в аккаунт
+                                              // Login to your account
         {
             bool EndEntry = false;
 
@@ -40,7 +42,8 @@ namespace WebShopApp
         }
 
 
-        public void SingUp(ref Customer user) // Регистрация нового аккаунта / Registering a new account
+        public void SingUp(ref Customer user) // Регистрация нового аккаунта
+                                              // Registering a new account
         {
             bool EndRegistration = false;
 
@@ -119,7 +122,8 @@ namespace WebShopApp
             }
         }
 
-        public void SingInA(ref Customer user) // Вход в спец. аккаунт / Login to spec. account
+        public void SingInA(ref Customer user) // Вход в спец. аккаунт
+                                               // Login to spec. account
         {
             bool EndEntry = false;
 

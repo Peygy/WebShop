@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebShopApp
 {
-    class UserEntryBack // Авторизация и Регистрация / Authorization and Registration
+    public class UserEntryBack // Авторизация и Регистрация
+                               // Authorization and Registration
     {
-        public bool SingIn_Back(string login, string password, ref Customer user) // Вход в аккаунт / Login to your account
+        public bool SingIn_Back(string login, string password, ref Customer user) // Вход в аккаунт
+                                                                                  // Login to your account
         {
             try
             {
@@ -26,8 +28,16 @@ namespace WebShopApp
 
                     if (data.Moders.Any(m => m.Login == login && m.Password == password))
                     {
-                        Console.Write("Ключ идентификации: ");
-                        string key = Console.ReadLine();
+                        #if RELEASE
+                            Console.WriteLine();
+                            Console.Write("Ключ идентификации: ");
+                            string key = Console.ReadLine();
+                        #endif
+
+                        #if DEBUG
+                            string key = "01";
+                        #endif
+
 
                         if (key == data.Moders.FirstOrDefault(m => m.Login == login && m.Password == password).SpecialKey)
                         {
@@ -57,7 +67,8 @@ namespace WebShopApp
         }
 
 
-        public bool SingUp_Back(string login, string password, ref Customer user, int key) // Регистрация нового аккаунта / Registering a new account
+        public bool SingUp_Back(string login, string password, ref Customer user, int key) // Регистрация нового аккаунта
+                                                                                           // Registering a new account
         {
             try
             {

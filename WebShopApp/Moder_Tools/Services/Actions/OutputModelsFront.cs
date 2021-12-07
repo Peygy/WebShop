@@ -4,11 +4,13 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class OutputModelsFront
+    class OutputModelsFront // Класс вывода моделей
+                            // Model inference class
     {
         OutputModelsBack output = new OutputModelsBack();
 
-        public void ViewAllCategories() // Посмотреть все категории / View all categories
+        public void ViewAllCategories() // Посмотреть все категории
+                                        // View all categories
         {
             Console.WriteLine();
             Console.WriteLine("Все категории:");
@@ -20,7 +22,8 @@ namespace WebShopApp
             Console.WriteLine();
         }
 
-        public void ViewAllProducts() // Посмотреть все товары / View all products
+        public void ViewAllProducts() // Посмотреть все товары
+                                      // View all products
         {
             Console.WriteLine();
             Console.WriteLine("Все товары:");
@@ -32,7 +35,8 @@ namespace WebShopApp
             Console.WriteLine();
         }
 
-        public void ViewAllOrders() // Посмотреть все заказы / View all orders
+        public void ViewAllOrders() // Посмотреть все заказы
+                                    // View all orders
         {
             Console.WriteLine();
             Console.WriteLine("Все заказы:");
@@ -44,7 +48,8 @@ namespace WebShopApp
             Console.WriteLine();
         }
 
-        public void ViewAllUsers() // Посмотреть всех пользователей / View all users
+        public void ViewAllUsers() // Посмотреть всех пользователей
+                                   // View all users
         {
             Console.WriteLine();
             Console.WriteLine("Все пользователи:");
@@ -57,6 +62,7 @@ namespace WebShopApp
         }
 
         public void ViewAllModers() // Посмотреть всех модераторов
+                                    // View all moderators
         {
             Console.WriteLine();
             Console.WriteLine("Все модераторы:");

@@ -6,9 +6,11 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class UserBackTools // Класс инструментов для взаимодействия пользователя с магазином / Class of tools for user interaction with the store
+    public class UserBackTools // Класс инструментов для взаимодействия пользователя с магазином
+                               // Class of tools for user interaction with the store
     {
-        public bool CategoriesOutput_Back(int categoryInput, ref Category category) // Вывод категорий для покупки товаров / Output categories for buying products
+        public bool CategoriesOutput_Back(int categoryInput, ref Category category) // Вывод категории для покупки товаров
+                                                                                    // Output category for buying products
         {
             try
             {
@@ -40,7 +42,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool AddToBasket_Back(Product product, Customer user) // Добавление товаров в корзину / Adding products to basket
+        public bool AddToBasket_Back(Product product, Customer user) // Добавление товаров в корзину
+                                                                     // Adding products to basket
         {
             try
             {
@@ -74,7 +77,8 @@ namespace WebShopApp
 
 
 
-        public bool UserBasket_Back(int orderNumber) // Действия с корзиной / Basket actions
+        public bool OrderExist_Back(int orderNumber) // Проверка наличия заказа в базе данных
+                                                     // Checking the existance of an order in the database
         {
             try
             {
@@ -101,7 +105,8 @@ namespace WebShopApp
         }
 
 
-        public bool RegistrationOrder_Back(Customer user, int orderNumber) // Оформление заказа / Checkout
+        public bool RegistrationOrder_Back(Customer user, int orderNumber) // Оформление заказа
+                                                                           // Checkout
         {
             try
             {
@@ -131,7 +136,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool ProductRemoveFromBasket_Back(Customer user, ref Product product,int prodNum) // Удаление товара из корзины / Product removing from basket
+        public bool ProductRemoveFromBasket_Back(Customer user, ref Product product, int prodNum) // Удаление товара из корзины
+                                                                                                 // Product removing from basket
         {
             try
             {
@@ -163,7 +169,8 @@ namespace WebShopApp
             return false;
         }
 
-        public bool OrdersInfo_Back(ref Customer user, int OrderInput, ref Order order, int key) // Вывод заказов и удаление заказа / Output orders and removing order
+        public bool OrdersInfo_Back(ref Customer user, int OrderInput, ref Order order, int key) // Вывод заказов и удаление заказа
+                                                                                                 // Output orders and removing order
         {
             try
             {
@@ -191,7 +198,7 @@ namespace WebShopApp
 
                     if (key == 1) // 'order' Output
                     {
-                        if(OrderInput <= user.Orders.Count && OrderInput > 0)
+                        if(OrderInput <= user.Orders.Count && OrderInput >= 0)
                         {
                             order = user.Orders[OrderInput];
 
@@ -211,7 +218,6 @@ namespace WebShopApp
                             .Include(o => o.OrderProducts)
                             .FirstOrDefault(o => o == orderForRemove);
 
-                        orderForRemove.OrderProducts.Clear();
                         data.Orders.Remove(orderForRemove);
                         data.SaveChanges();
 
@@ -230,7 +236,8 @@ namespace WebShopApp
         }
 
 
-        public bool AccountRemove_Back(Customer user) // Удаление аккаунта / Account removing
+        public bool AccountRemove_Back(Customer user) // Удаление аккаунта
+                                                      // Account removing
         {
             try
             {
@@ -263,7 +270,8 @@ namespace WebShopApp
         }
 
 
-        public void BasketInfo_Back(ref Customer user) // Вывод корзины покупателя / Output user's basket
+        public void BasketInfo_Back(ref Customer user) // Вывод корзины покупателя 
+                                                       // Output user's basket
         {
             try
             {

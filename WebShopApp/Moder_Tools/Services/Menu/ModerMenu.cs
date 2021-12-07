@@ -4,13 +4,15 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class ModerMenu // Меню Модерации / Moderation Menu
+    class ModerMenu // Меню Модерации
+                    // Moderation Menu
     {
         ModerFrontTools moderAct = new ModerFrontTools();
         OutputModelsFront output = new OutputModelsFront();
 
 
-        public void ModerShowcase() // Вывод меню модератора / Output moderation menu
+        public void ModerShowcase() // Вывод меню модератора
+                                    // Output moderation menu
         {
             bool exit = false;
 

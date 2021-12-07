@@ -4,7 +4,8 @@ using System.Text;
 
 namespace WebShopApp
 {
-    class UserFrontTools // Класс взаимодействия пользователя с магазином / User interaction class with the store
+    class UserFrontTools // Класс взаимодействия пользователя с магазином
+                         // User interaction class with the store
     {       
         UserBackTools userAct = new UserBackTools();
         OutputModelsFront output = new OutputModelsFront();
@@ -15,7 +16,8 @@ namespace WebShopApp
         Order order;
 
 
-        public void CategoriesOutput(Customer user) // Категории для покупки товаров / Categories for buying products 
+        public void CategoriesOutput(Customer user) // Категории для покупки товаров
+                                                    // Categories for buying products 
         {
             bool exit = false;
 
@@ -54,7 +56,8 @@ namespace WebShopApp
             }
         }
 
-        public void ProductOutput(Category category, Customer user) // Товары для покупки и добваления в корзину / Products to buy and adding to the basket
+        public void ProductOutput(Category category, Customer user) // Товары для покупки и добваления в корзину
+                                                                    // Products to buy and adding to the basket
         {
             bool exit = false;
 
@@ -68,7 +71,7 @@ namespace WebShopApp
                 for (int i = 0; i < category.Products.Count; i++)
                 {
                     Console.WriteLine($"{i + 1}. {category.Products[i].Name} => " +
-                        $"Цена: {category.Products[i].Price} ₽");
+                        $"Цена: {category.Products[i].Price} Руб.");
                 }
 
 
@@ -121,7 +124,8 @@ namespace WebShopApp
 
 
 
-        public void UserBasket(Customer user) // Действия с корзиной / Basket actions
+        public void UserBasket(Customer user) // Действия с корзиной
+                                              // Basket actions
         {
             gener = new Random();
             bool exit = false;
@@ -142,7 +146,7 @@ namespace WebShopApp
             {
                 orderNumber = gener.Next(100000, 1000000);
 
-                if (userAct.UserBasket_Back(orderNumber))
+                if (userAct.OrderExist_Back(orderNumber))
                 {
                     exit = true;
                 }
@@ -155,14 +159,14 @@ namespace WebShopApp
             for (int i = 0; i < user.Basket.Count; i++)
             {
                 Console.WriteLine($"{i + 1}. Название: {user.Basket[i].Name}; " +
-                    $"Цена: {user.Basket[i].Price} ₽");
+                    $"Цена: {user.Basket[i].Price} Руб.");
 
                 generalCost = generalCost + user.Basket[i].Price;
             }
 
             Console.WriteLine();
             Console.WriteLine($"Итого: {user.Basket.Count} " +
-                $"товар(а) на {generalCost} ₽");
+                $"товар(а) на {generalCost} Руб.");
 
 
             Console.WriteLine();
@@ -193,7 +197,8 @@ namespace WebShopApp
         }
 
 
-        public void RegistrationOrder(Customer user, int orderNumber) // Оформить заказ / Checkout
+        public void RegistrationOrder(Customer user, int orderNumber) // Оформить заказ
+                                                                      // Checkout
         {
             int generalCost = 0;
 
@@ -220,13 +225,13 @@ namespace WebShopApp
             for (int i = 0; i < user.Basket.Count; i++)
             {
                 Console.WriteLine($"{i + 1}. Название: {user.Basket[i].Name}; " +
-                    $"Цена: {user.Basket[i].Price} ₽");
+                    $"Цена: {user.Basket[i].Price} Руб.");
 
                 generalCost = generalCost + user.Basket[i].Price;
             }
 
             Console.WriteLine();
-            Console.WriteLine($"Общая стоимость: {generalCost} ₽");
+            Console.WriteLine($"Общая стоимость: {generalCost} Руб.");
             Console.WriteLine();
 
 
@@ -246,7 +251,8 @@ namespace WebShopApp
             }
         }
 
-        public void ProductRemoveFromBasket(Customer user) // Удалить товар из корзины / Remove product from basket
+        public void ProductRemoveFromBasket(Customer user) // Удалить товар из корзины
+                                                           // Remove product from basket
         {
             int generalCost = 0;
 
@@ -290,7 +296,8 @@ namespace WebShopApp
             Console.ReadLine();
         }
 
-        public void OrdersInfo(Customer user) // Заказы и удаление заказа / Orders and order remove
+        public void OrdersInfo(Customer user) // Заказы и удаление заказа
+                                              // Orders and order remove
         {
             var products = new List<Product>();
             int OrderInput = 0;
@@ -341,7 +348,7 @@ namespace WebShopApp
                     for (int i = 0; i < products.Count; i++)
                     {
                         Console.WriteLine($"Название: {order.OrderProducts[i].Name} => " +
-                            $"Цена: {order.OrderProducts[i].Price} ₽");
+                            $"Цена: {order.OrderProducts[i].Price} Руб.");
                     }
 
                     Console.WriteLine();
@@ -378,7 +385,8 @@ namespace WebShopApp
         }
 
 
-        public void AccountRemove(Customer user) // Удалить аккаунт / Remove account
+        public void AccountRemove(Customer user) // Удалить аккаунт
+                                                 // Remove account
         {
             Console.WriteLine();
             Console.WriteLine("Вы точно хотите удалить Ваш аккаунт?");
